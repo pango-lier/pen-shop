@@ -3,44 +3,58 @@ import { Attachment } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Location, ShopSocials } from 'src/settings/entities/setting.entity';
 import { User } from 'src/users/entities/user.entity';
-
-export class Shop extends CoreEntity {
-  owner_id: number;
-  owner: User;
-  staffs?: User[];
-  is_active: boolean;
-  orders_count: number;
-  products_count: number;
-  balance?: Balance;
-  name: string;
-  slug: string;
-  description?: string;
-  cover_image: Attachment;
-  logo?: Attachment;
-  address: UserAddress;
-  settings?: ShopSettings;
-}
-
-export class Balance {
-  id: number;
-  admin_commission_rate: number;
-  shop: Shop;
-  total_earnings: number;
-  withdrawn_amount: number;
-  current_balance: number;
-  payment_info: PaymentInfo;
-}
-
-export class PaymentInfo {
-  account: string;
-  name: string;
-  email: string;
-  bank: string;
-}
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Balance } from './balance.entity';
 
 export class ShopSettings {
   socials: ShopSocials[];
   contact: string;
   location: Location;
   website: string;
+}
+
+@Entity()
+export class Shop extends CoreEntity {
+  @Column({ type: 'bigint', unsigned: true })
+  owner_id: number;
+
+  @ManyToOne(() => User, (user) => user.shops)
+  @JoinColumn({ name: 'owner_id' })
+  owner: User;
+
+  @OneToMany(() => User, (user) => user.managed_shop, { nullable: true })
+  staffs?: User[];
+
+  @Column({ type: 'boolean', default: true })
+  is_active: boolean;
+
+  @Column({ type: 'bigint', default: 0 })
+  orders_count: number;
+
+  @Column({ type: 'bigint', default: 0 })
+  products_count: number;
+
+  @OneToOne(() => Balance, { nullable: true })
+  balance?: Balance;
+
+  @Column({ type: 'varchar' })
+  name: string;
+
+  @Column({ type: 'varchar' })
+  slug: string;
+
+  @Column({ type: 'text', nullable: true })
+  description?: string;
+
+  @OneToOne(() => Attachment)
+  cover_image: Attachment;
+
+  @OneToOne(() => Attachment, { nullable: true })
+  logo?: Attachment;
+
+  @Column({ type: 'json' })
+  address: UserAddress;
+
+  @Column({ type: 'json', nullable: true })
+  settings?: ShopSettings;
 }
