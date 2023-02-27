@@ -33,6 +33,8 @@ import { UsersModule } from './users/users.module';
 import { WebHookModule } from './web-hook/web-hook.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
 import { WithdrawsModule } from './withdraws/withdraws.module';
+import { EnvModule } from './env/env.module';
+import { DatabaseModule } from './database/database.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -72,6 +74,8 @@ import { WithdrawsModule } from './withdraws/withdraws.module';
     PaymentIntentModule,
     WebHookModule,
     PaymentModule,
+    EnvModule,
+    DatabaseModule,
   ],
   controllers: [],
   providers: [],
