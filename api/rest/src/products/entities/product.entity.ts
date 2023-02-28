@@ -34,14 +34,28 @@ export class OrderProductPivot {
   subtotal: number;
 }
 
-export class Variation {
-  id: number;
+@Entity()
+export class Variation extends CoreEntity {
+  // id: number;
+  @Column({ type: 'varchar' })
   title: string;
+
+  @Column({ type: 'bigint' })
   price: number;
+
+  @Column({ type: 'varchar' })
   sku: string;
+
+  @Column({ type: 'boolean' })
   is_disable: boolean;
+
+  @Column({ type: 'bigint', nullable: true })
   sale_price?: number;
+
+  @Column({ type: 'bigint' })
   quantity: number;
+
+  @Column({ type: 'json' })
   options: VariationOption[];
 }
 
@@ -50,9 +64,15 @@ export class VariationOption {
   value: string;
 }
 
+@Entity()
 export class File extends CoreEntity {
+  @Column({ type: 'bigint', unsigned: true })
   attachment_id: number;
+
+  @Column({ type: 'varchar', length: 2083 })
   url: string;
+
+  @Column({ type: 'bigint', unsigned: true })
   fileable_id: number;
 }
 
@@ -80,10 +100,10 @@ export class Product extends CoreEntity {
   @ManyToMany(() => Tag)
   tags?: Tag[];
 
-  @ManyToMany(() => AttributeValue)
+  @ManyToMany(() => AttributeValue, { nullable: true })
   variations?: AttributeValue[];
 
-  @Column({ type: 'json', nullable: true })
+  @ManyToMany(() => Variation, { nullable: true })
   variation_options?: Variation[];
 
   @Column({ type: 'json', nullable: true })
@@ -157,6 +177,7 @@ export class Product extends CoreEntity {
   @Column({ type: 'boolean' })
   in_wishlist: boolean;
 
+  @OneToMany(() => Review, (review) => review.product, { nullable: true })
   my_review?: Review[];
 
   @Column({ type: 'varchar', length: 4, nullable: true })

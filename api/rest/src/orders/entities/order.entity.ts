@@ -9,6 +9,7 @@ import { OrderStatus } from './order-status.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -141,11 +142,26 @@ export class Order extends CoreEntity {
   payment_intent: PaymentIntent;
 }
 
+@Entity()
 export class OrderFiles extends CoreEntity {
+
+  @Column({ type: 'varchar' })
   purchase_key: string;
+
+  @Column({ type: 'bigint', unsigned: true })
   digital_file_id: number;
+
+  @Column({ type: 'bigint', nullable: true })
   order_id?: number;
+
+  @Column({ type: 'bigint', unsigned: true })
   customer_id: number;
+
+  @ManyToOne(() => Product)
+  @JoinColumn({ name: 'digital_file_id' })
   file: File;
+
+  @ManyToOne(() => Product)
+  @JoinColumn({ name: 'fileable_id' })
   fileable: Product;
 }
