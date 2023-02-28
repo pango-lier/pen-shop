@@ -1,17 +1,6 @@
 import { Attachment } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
-
-export class Type extends CoreEntity {
-  name: string;
-  slug: string;
-  image: Attachment;
-  icon: string;
-  banners?: Banner[];
-  promotional_sliders?: Attachment[];
-  settings?: TypeSettings;
-  language: string;
-  translated_languages: string[];
-}
+import { Column, Entity, ManyToMany, OneToMany, OneToOne } from 'typeorm';
 
 export class Banner {
   id: number;
@@ -24,4 +13,33 @@ export class TypeSettings {
   isHome: boolean;
   layoutType: string;
   productCard: string;
+}
+@Entity()
+export class Type extends CoreEntity {
+  @Column({ type: 'varchar' })
+  name: string;
+
+  @Column({ type: 'varchar' })
+  slug: string;
+
+  @OneToOne(() => Attachment)
+  image: Attachment;
+
+  @Column({ type: 'varchar' })
+  icon: string;
+
+  @Column({ type: 'json', nullable: true })
+  banners?: Banner[];
+
+  @ManyToMany(() => Attachment)
+  promotional_sliders?: Attachment[];
+
+  @Column({ type: 'json', nullable: true })
+  settings?: TypeSettings;
+
+  @Column({ type: 'varchar', length: 4 })
+  language: string;
+
+  @Column({ type: 'simple-array' })
+  translated_languages: string[];
 }

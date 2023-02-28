@@ -7,9 +7,9 @@ export class CoreEntity {
 
   @CreateDateColumn({ type: 'timestamp', nullable: true })
   @Type(() => Date)
-  created_at: Date;
+  created_at?: Date;
 
   @UpdateDateColumn({ type: 'timestamp', nullable: true })
   @Type(() => Date)
-  updated_at: Date;
+  updated_at?: Date;
 }

@@ -2,6 +2,7 @@ import { CoreEntity } from '../../common/entities/core.entity';
 import { Attachment } from '../../common/entities/attachment.entity';
 import { ShopSocials } from '../../settings/entities/setting.entity';
 import { Type } from '../../types/entities/type.entity';
+import { Column } from 'typeorm';
 
 export class Manufacturer extends CoreEntity {
   cover_image?: Attachment;
@@ -16,5 +17,7 @@ export class Manufacturer extends CoreEntity {
   type_id?: string;
   website?: string;
   language?: string;
+
+  @Column({ type: 'simple-array',nullable:true })
   translated_languages?: string[];
 }

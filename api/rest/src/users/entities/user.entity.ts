@@ -2,8 +2,16 @@ import { Address } from 'src/addresses/entities/address.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 // import { Order } from 'src/orders/entities/order.entity';
 import { Shop } from 'src/shops/entities/shop.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Profile } from './profile.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 @Entity()
 export class User extends CoreEntity {
@@ -34,5 +42,7 @@ export class User extends CoreEntity {
 
   @OneToMany(() => Address, (address) => address.customer, { nullable: true })
   address?: Address[];
-  // orders?: Order[];
+
+  @OneToMany(() => Order, (order) => order.customer, { nullable: true })
+  orders?: Order[];
 }

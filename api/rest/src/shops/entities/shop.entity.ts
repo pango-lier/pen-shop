@@ -3,8 +3,16 @@ import { Attachment } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Location, ShopSocials } from 'src/settings/entities/setting.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Balance } from './balance.entity';
+import { Attribute } from '../../attributes/entities/attribute.entity';
 
 export class ShopSettings {
   socials: ShopSocials[];
@@ -57,4 +65,7 @@ export class Shop extends CoreEntity {
 
   @Column({ type: 'json', nullable: true })
   settings?: ShopSettings;
+
+  @OneToMany(() => Attribute, (attribute) => attribute.shop, { nullable: true })
+  attributes?: Attribute[];
 }
