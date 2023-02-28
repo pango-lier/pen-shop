@@ -104,16 +104,33 @@ export class Product extends CoreEntity {
 
   @Column({ type: 'varchar' })
   description: string;
+
+  @Column({ type: 'boolean', default: true })
   in_stock: boolean;
+
+  @Column({ type: 'boolean', default: false })
   is_taxable: boolean;
+
+  @Column({ type: 'bigint', nullable: true })
   sale_price?: number;
+
+  @Column({ type: 'bigint', nullable: true })
   max_price?: number;
+
+  @Column({ type: 'bigint', nullable: true })
   min_price?: number;
 
   @Column({ type: 'varchar', nullable: true })
   sku?: string;
+
+  //@Column({ type: 'json', nullable: true })
+  @ManyToMany(() => Attachment)
   gallery?: Attachment[];
+
+  @OneToOne(() => Attachment)
   image?: Attachment;
+
+  @Column({ type: 'enum', enum: ProductStatus, default: ProductStatus.DRAFT })
   status: ProductStatus;
 
   @Column({ type: 'varchar', nullable: true })
@@ -139,7 +156,7 @@ export class Product extends CoreEntity {
 
   @Column({ type: 'boolean' })
   in_wishlist: boolean;
-  
+
   my_review?: Review[];
 
   @Column({ type: 'varchar', length: 4, nullable: true })
