@@ -14,14 +14,17 @@ const data = [
 ];
 export default class CreateNewUserSeeder implements Seeder {
   public async run(factory: Factory, connect: Connection): Promise<any> {
+    console.log('CreateNewUserSeeder');
     for (let i = 0; i < data.length; i++) {
       const user = await connect
         .getRepository('user')
-        .findOneByOrFail({ email: data[i].email });
+        .findOneBy({ email: data[i].email });
+      console.log(data, user);
       if (user) {
         await connect.getRepository('user').save({ ...user, ...data[i] });
       } else {
         const newUser = connect.getRepository('user').create(data[i]);
+        console.log('create new user', newUser);
         await connect.getRepository('user').save(newUser);
       }
     }

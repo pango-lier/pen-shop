@@ -44,11 +44,24 @@ export class AuthService {
   async login(loginInput: User): Promise<AuthResponse> {
     const result = await this.jwtAuthService.login(loginInput);
     return {
-      token: 'jwt token',
+      token: result.accessToken,
       permissions: ['super_admin', 'customer'],
       result,
     };
   }
+
+  async refreshJwt(loginInput: User): Promise<AuthResponse> {
+    const result = await this.jwtAuthService.refreshTokens(
+      loginInput?.id,
+      loginInput?.refreshToken,
+    );
+    return {
+      token: result.accessToken,
+      permissions: ['super_admin', 'customer'],
+      result,
+    };
+  }
+
   async changePassword(
     changePasswordInput: ChangePasswordDto,
   ): Promise<CoreResponse> {

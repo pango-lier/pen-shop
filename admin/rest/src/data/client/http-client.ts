@@ -2,6 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import Router from 'next/router';
 import invariant from 'tiny-invariant';
+import { setAuthCredentials } from '../../utils/auth-utils';
 
 invariant(
   process.env.NEXT_PUBLIC_REST_API_ENDPOINT,
@@ -33,16 +34,44 @@ Axios.interceptors.request.use((config) => {
 // Change response data/error here
 Axios.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    let tryRefreshToken = false;
     if (
       (error.response && error.response.status === 401) ||
       (error.response && error.response.status === 403) ||
       (error.response &&
         error.response.data.message === 'PICKBAZAR_ERROR.NOT_AUTHORIZED')
     ) {
-      Cookies.remove(AUTH_TOKEN_KEY);
-      Router.reload();
+      // Cookies.remove(AUTH_TOKEN_KEY);
+      tryRefreshToken = true;
+      // Router.reload();
     }
+
+    if (error.response && error.response.status === 401) {
+      try {
+        const cookies = Cookies.get(AUTH_TOKEN_KEY);
+        let token: any = '';
+        if (cookies) {
+          token = JSON.parse(cookies)['meta'];
+        }
+        const axiosRefresh = axios.create({
+          baseURL: process.env.NEXT_PUBLIC_REST_API_ENDPOINT,
+          timeout: 50000,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.refreshToken}`,
+          },
+        });
+        const response = await axiosRefresh.post('jwt-refresh-token');
+        const data = response.data;
+        console.log(data?.token, data?.permissions, data?.result);
+        setAuthCredentials(data?.token, data?.permissions, data?.result);
+        tryRefreshToken = false;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    if (tryRefreshToken) Cookies.remove(AUTH_TOKEN_KEY);
     return Promise.reject(error);
   }
 );

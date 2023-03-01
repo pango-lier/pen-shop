@@ -19,7 +19,7 @@ export class UsersStore {
 
   async findByUsername(username: string) {
     return await this.userRepo.findOne({
-      where: [{ username: username }],
+      where: { username },
     });
   }
 

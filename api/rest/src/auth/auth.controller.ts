@@ -20,6 +20,8 @@ import {
   VerifyOtpDto,
 } from './dto/create-auth.dto';
 import { LocalAuthGuard } from './jwt-auth/guards/local-auth.guard';
+import { RefreshTokenGuard } from './jwt-auth/guards/refresh-token-auth.guard';
+import { jwtAuthGuard } from './jwt-auth/guards/jwt-auth.guard';
 
 @Controller()
 export class AuthController {
@@ -35,6 +37,13 @@ export class AuthController {
   login(@Request() req) {
     return this.authService.login(req.user);
   }
+
+  @UseGuards(RefreshTokenGuard)
+  @Post('jwt-refresh-token')
+  refreshJwt(@Request() req) {
+    return this.authService.refreshJwt(req.user);
+  }
+
   @Post('social-login-token')
   socialLogin(@Body() socialLoginDto: SocialLoginDto) {
     return this.authService.socialLogin(socialLoginDto);
@@ -74,6 +83,7 @@ export class AuthController {
     return this.authService.verifyForgetPasswordToken(verifyForgetPasswordDto);
   }
 
+  @UseGuards(jwtAuthGuard)
   @Get('me')
   me() {
     return this.authService.me();

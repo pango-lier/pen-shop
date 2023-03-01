@@ -53,7 +53,7 @@ export class JwtAuthService {
     return null;
   }
 
-  async refreshTokens(userId: string, refreshToken: string) {
+  async refreshTokens(userId: number, refreshToken: string) {
     const user = await this.userStore.findById(+userId);
     if (!user || !user.refreshToken)
       throw new ForbiddenException('Access Denied');
@@ -67,7 +67,14 @@ export class JwtAuthService {
       username: user.username,
     });
     await this.setCurrentRefreshToken(tokens.refreshToken, user.id);
-    return tokens;
+    return {
+      userData: { id: user.id, username: user.username, email: user.email },
+      accessToken: tokens.accessToken,
+      refreshToken,
+      access_token: tokens.accessToken,
+      token_type: 'bearer',
+      expires_in: this.configService.get<number>('jwt.accessToken.ttl'),
+    };
   }
 
   private getTokenOptions(type: string) {

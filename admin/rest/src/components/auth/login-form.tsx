@@ -40,7 +40,7 @@ const LoginForm = () => {
         onSuccess: (data) => {
           if (data?.token) {
             if (hasAccess(allowedRoles, data?.permissions)) {
-              setAuthCredentials(data?.token, data?.permissions);
+              setAuthCredentials(data?.token, data?.permissions, data?.result);
               Router.push(Routes.dashboard);
               return;
             }
@@ -49,7 +49,9 @@ const LoginForm = () => {
             setErrorMessage('form:error-credential-wrong');
           }
         },
-        onError: () => {},
+        onError: (e) => {
+          setErrorMessage(error || e || 'Invailid');
+        },
       }
     );
   }
