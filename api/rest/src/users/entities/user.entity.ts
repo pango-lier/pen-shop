@@ -12,17 +12,30 @@ import {
 } from 'typeorm';
 import { Profile } from './profile.entity';
 import { Order } from '../../orders/entities/order.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User extends CoreEntity {
   @Column({ type: 'varchar' })
   name: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  username: string;
+
   @Column({ type: 'varchar' })
   email: string;
 
+  @Exclude()
   @Column({ type: 'varchar', nullable: true })
   password?: string;
+
+  @Exclude()
+  @Column({ length: 100, nullable: true })
+  rememberToken?: string;
+
+  @Exclude()
+  @Column({ nullable: true })
+  refreshToken?: string;
 
   @Column({ type: 'bigint', nullable: true, unsigned: true })
   shop_id?: number;
@@ -45,4 +58,8 @@ export class User extends CoreEntity {
 
   @OneToMany(() => Order, (order) => order.customer, { nullable: true })
   orders?: Order[];
+
+  // constructor(partial?: Partial<User>) {
+  //   Object.assign(this, partial);
+  // }
 }

@@ -18,10 +18,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { plainToClass } from 'class-transformer';
 import { User } from 'src/users/entities/user.entity';
 import usersJson from '@db/users.json';
+import { JwtAuthService } from './jwt-auth/jwt-auth.service';
 const users = plainToClass(User, usersJson);
 
 @Injectable()
 export class AuthService {
+  constructor(private jwtAuthService: JwtAuthService) {}
   private users: User[] = users;
   async register(createUserInput: RegisterDto): Promise<AuthResponse> {
     const user: User = {
@@ -38,11 +40,13 @@ export class AuthService {
       permissions: ['super_admin', 'customer'],
     };
   }
-  async login(loginInput: LoginDto): Promise<AuthResponse> {
-    console.log(loginInput);
+
+  async login(loginInput: User): Promise<AuthResponse> {
+    const result = await this.jwtAuthService.login(loginInput);
     return {
       token: 'jwt token',
       permissions: ['super_admin', 'customer'],
+      result,
     };
   }
   async changePassword(

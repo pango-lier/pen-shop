@@ -13,8 +13,11 @@ export class CreateUserDto extends PickType(User, [
   'name',
   'email',
   'password',
+  'username',
+  'refreshToken',
+  'rememberToken',
 ]) {
-  address: CreateAddressDto[];
+  // address: CreateAddressDto[];
   profile: CreateProfileDto;
-  permission: Permission = Permission.CUSTOMER;
+  // permission: Permission = Permission.CUSTOMER;
 }

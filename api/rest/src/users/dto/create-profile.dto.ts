@@ -6,8 +6,9 @@ export class CreateProfileDto extends PickType(Profile, [
   'bio',
   'socials',
   'contact',
+  'customer_id',
 ]) {
-  customer: ConnectBelongsTo;
+  //customer: ConnectBelongsTo;
 }
 
 export class ConnectBelongsTo {

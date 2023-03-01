@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   ChangePasswordDto,
@@ -12,6 +19,7 @@ import {
   VerifyForgetPasswordDto,
   VerifyOtpDto,
 } from './dto/create-auth.dto';
+import { LocalAuthGuard } from './jwt-auth/guards/local-auth.guard';
 
 @Controller()
 export class AuthController {
@@ -21,9 +29,11 @@ export class AuthController {
   createAccount(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
+
+  @UseGuards(LocalAuthGuard)
   @Post('token')
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  login(@Request() req) {
+    return this.authService.login(req.user);
   }
   @Post('social-login-token')
   socialLogin(@Body() socialLoginDto: SocialLoginDto) {

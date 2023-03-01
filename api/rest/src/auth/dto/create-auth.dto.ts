@@ -13,7 +13,7 @@ export class RegisterDto extends PickType(User, ['name', 'email', 'password']) {
 }
 
 export class LoginDto extends PartialType(
-  PickType(User, ['email', 'password']),
+  PickType(User, ['email', 'password', 'username']),
 ) {}
 
 export class SocialLoginDto {
@@ -40,6 +40,7 @@ export class ResetPasswordDto {
 export class AuthResponse {
   token: string;
   permissions: string[];
+  result?: any;
 }
 export class CoreResponse extends CoreMutationOutput {}
 export class VerifyOtpDto {
