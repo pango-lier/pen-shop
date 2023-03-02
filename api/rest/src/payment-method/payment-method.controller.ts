@@ -7,20 +7,28 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CreatePaymentMethodDto } from './dto/create-payment-method.dto';
 import { GetPaymentMethodsDto } from './dto/get-payment-methods.dto';
 import { DefaultCart } from './dto/set-default-card.dto';
 import { UpdatePaymentMethodDto } from './dto/update-payment-method.dto';
 import { PaymentMethodService } from './payment-method.service';
+import { jwtAuthGuard } from '../auth/jwt-auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/jwt-auth/decorator/user.decorator';
+import { ICurrentUser } from '../auth/jwt-auth/interface/authenticated-user.interface';
 
+@UseGuards(jwtAuthGuard)
 @Controller('cards')
 export class PaymentMethodController {
   constructor(private readonly paymentMethodService: PaymentMethodService) {}
 
   @Post()
-  create(@Body() createPaymentMethodDto: CreatePaymentMethodDto) {
-    return this.paymentMethodService.create(createPaymentMethodDto);
+  create(
+    @Body() createPaymentMethodDto: CreatePaymentMethodDto,
+    @CurrentUser() user: ICurrentUser,
+  ) {
+    return this.paymentMethodService.create(createPaymentMethodDto, +user.id);
   }
 
   @Get()
@@ -47,13 +55,20 @@ export class PaymentMethodController {
   }
 }
 
+@UseGuards(jwtAuthGuard)
 @Controller('/save-payment-method')
 export class SavePaymentMethodController {
   constructor(private readonly paymentMethodService: PaymentMethodService) {}
   @Post()
-  savePaymentMethod(@Body() createPaymentMethodDto: CreatePaymentMethodDto) {
+  savePaymentMethod(
+    @Body() createPaymentMethodDto: CreatePaymentMethodDto,
+    @CurrentUser() user: ICurrentUser,
+  ) {
     createPaymentMethodDto.default_card = false;
-    return this.paymentMethodService.savePaymentMethod(createPaymentMethodDto);
+    return this.paymentMethodService.savePaymentMethod(
+      createPaymentMethodDto,
+      +user.id,
+    );
   }
 }
 

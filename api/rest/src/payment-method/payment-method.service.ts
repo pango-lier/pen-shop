@@ -28,7 +28,7 @@ export class PaymentMethodService {
   ) {}
   private setting: Setting = this.settingService.findAll();
 
-  async create(createPaymentMethodDto: CreatePaymentMethodDto) {
+  async create(createPaymentMethodDto: CreatePaymentMethodDto, userId: number) {
     try {
       const defaultCard = this.paymentMethods.find(
         (card: PaymentMethod) => card.default_card,
@@ -45,7 +45,11 @@ export class PaymentMethodService {
         );
       }
       const paymentGateway: string = this.setting.options.paymentGateway;
-      return await this.saveCard(createPaymentMethodDto, paymentGateway);
+      return await this.saveCard(
+        createPaymentMethodDto,
+        userId,
+        paymentGateway,
+      );
     } catch (error) {
       console.log(error);
       return this.paymentMethods[0];
@@ -87,10 +91,13 @@ export class PaymentMethodService {
     return this.findOne(Number(method_id));
   }
 
-  async savePaymentMethod(createPaymentMethodDto: CreatePaymentMethodDto) {
+  async savePaymentMethod(
+    createPaymentMethodDto: CreatePaymentMethodDto,
+    userId: number,
+  ) {
     const paymentGateway: string = this.setting.options.paymentGateway;
     try {
-      return this.saveCard(createPaymentMethodDto, paymentGateway);
+      return this.saveCard(createPaymentMethodDto, userId, paymentGateway);
     } catch (err) {
       console.log(err);
     }
@@ -98,6 +105,7 @@ export class PaymentMethodService {
 
   async saveCard(
     createPaymentMethodDto: CreatePaymentMethodDto,
+    userId: number,
     paymentGateway: string,
   ) {
     const { method_key, default_card } = createPaymentMethodDto;
@@ -118,6 +126,7 @@ export class PaymentMethodService {
     } else {
       const paymentMethod = await this.makeNewPaymentMethodObject(
         createPaymentMethodDto,
+        userId,
         paymentGateway,
       );
       this.paymentMethods.push(paymentMethod);
@@ -146,10 +155,11 @@ export class PaymentMethodService {
 
   async makeNewPaymentMethodObject(
     createPaymentMethodDto: CreatePaymentMethodDto,
+    userId: number,
     paymentGateway: string,
   ) {
     const { method_key, default_card } = createPaymentMethodDto;
-    const { id: user_id, name, email } = this.authService.me();
+    const { id: user_id, name, email } = await this.authService.me(userId);
     const listofCustomer = await this.stripeService.listAllCustomer();
     let currentCustomer = listofCustomer.data.find(
       (customer: StripeCustomer) => customer.email === email,

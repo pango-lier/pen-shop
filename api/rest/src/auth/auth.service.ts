@@ -19,11 +19,15 @@ import { plainToClass } from 'class-transformer';
 import { User } from 'src/users/entities/user.entity';
 import usersJson from '@db/users.json';
 import { JwtAuthService } from './jwt-auth/jwt-auth.service';
+import { UsersStore } from '../users/users.store';
 const users = plainToClass(User, usersJson);
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtAuthService: JwtAuthService) {}
+  constructor(
+    private jwtAuthService: JwtAuthService,
+    private readonly userStore: UsersStore,
+  ) {}
   private users: User[] = users;
   async register(createUserInput: RegisterDto): Promise<AuthResponse> {
     const user: User = {
@@ -151,8 +155,8 @@ export class AuthService {
   // public getUser(getUserArgs: GetUserArgs): User {
   //   return this.users.find((user) => user.id === getUserArgs.id);
   // }
-  me(): User {
-    return this.users[0];
+  async me(userId: number): Promise<User> {
+    return await this.userStore.findById(userId);
   }
 
   // updateUser(id: number, updateUserInput: UpdateUserInput) {

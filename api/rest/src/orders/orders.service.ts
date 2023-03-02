@@ -67,7 +67,10 @@ export class OrdersService {
     private readonly stripeService: StripePaymentService,
     private readonly paypalService: PaypalPaymentService,
   ) {}
-  async create(createOrderInput: CreateOrderDto): Promise<Order> {
+  async create(
+    createOrderInput: CreateOrderDto,
+    userId: number,
+  ): Promise<Order> {
     const order: Order = this.orders[0];
     const payment_gateway_type = createOrderInput.payment_gateway
       ? createOrderInput.payment_gateway
@@ -105,6 +108,7 @@ export class OrdersService {
       ) {
         const paymentIntent = await this.processPaymentIntent(
           order,
+          userId,
           this.setting,
         );
         order.payment_intent = paymentIntent;
@@ -283,6 +287,7 @@ export class OrdersService {
    */
   async processPaymentIntent(
     order: Order,
+    userId: number,
     setting: Setting,
   ): Promise<PaymentIntent> {
     const paymentIntent = paymentIntents.find(
@@ -299,7 +304,11 @@ export class OrdersService {
       client_secret = null,
       redirect_url = null,
       customer = null,
-    } = await this.savePaymentIntent(order, setting.options.paymentGateway);
+    } = await this.savePaymentIntent(
+      order,
+      userId,
+      setting.options.paymentGateway,
+    );
     const is_redirect = redirect_url ? true : false;
     const paymentIntentInfo: PaymentIntent = {
       id: Number(Date.now()),
@@ -339,8 +348,12 @@ export class OrdersService {
    * @param order
    * @param paymentGateway
    */
-  async savePaymentIntent(order: Order, paymentGateway?: string): Promise<any> {
-    const me = this.authService.me();
+  async savePaymentIntent(
+    order: Order,
+    userId: number,
+    paymentGateway?: string,
+  ): Promise<any> {
+    const me = await this.authService.me(userId);
     switch (order.payment_gateway) {
       case PaymentGatewayType.STRIPE:
         const paymentIntentParam =

@@ -6,6 +6,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -13,6 +15,7 @@ import {
 import { Profile } from './profile.entity';
 import { Order } from '../../orders/entities/order.entity';
 import { Exclude } from 'class-transformer';
+import { Permission } from './permissions.entity';
 
 @Entity()
 export class User extends CoreEntity {
@@ -59,7 +62,17 @@ export class User extends CoreEntity {
   @OneToMany(() => Order, (order) => order.customer, { nullable: true })
   orders?: Order[];
 
-  // constructor(partial?: Partial<User>) {
-  //   Object.assign(this, partial);
-  // }
+  @ManyToMany(() => Permission, {
+    nullable: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinTable()
+  permissions?: Permission[];
+
+  constructor(partial?: Partial<User>) {
+    super();
+    Object.assign(this, partial);
+  }
 }

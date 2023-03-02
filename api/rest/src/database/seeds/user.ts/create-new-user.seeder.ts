@@ -10,6 +10,23 @@ const data = [
     email: 'kinhdoanh.bt@gmail.com',
     password: encodePwd('hellokitty'),
     role_name: 'super-admin',
+    permissions: [
+      {
+        id: '1',
+        name: 'super-admin',
+        displayName: 'SuperAdmin',
+      },
+      {
+        id: '2',
+        name: 'customer',
+        displayName: 'Customer',
+      },
+      {
+        id: '3',
+        name: 'store_owner',
+        displayName: 'Store Owner',
+      },
+    ],
   },
 ];
 export default class CreateNewUserSeeder implements Seeder {

@@ -20,14 +20,19 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { CheckoutVerificationDto } from './dto/verify-checkout.dto';
 import { Order } from './entities/order.entity';
 import { OrdersService } from './orders.service';
+import { CurrentUser } from '../auth/jwt-auth/decorator/user.decorator';
+import { ICurrentUser } from '../auth/jwt-auth/interface/authenticated-user.interface';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  async create(@Body() createOrderDto: CreateOrderDto): Promise<Order> {
-    return this.ordersService.create(createOrderDto);
+  async create(
+    @Body() createOrderDto: CreateOrderDto,
+    @CurrentUser() user: ICurrentUser,
+  ): Promise<Order> {
+    return this.ordersService.create(createOrderDto, +user.id);
   }
 
   @Get()

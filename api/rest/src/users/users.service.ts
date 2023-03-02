@@ -8,6 +8,7 @@ import Fuse from 'fuse.js';
 import { User } from './entities/user.entity';
 import usersJson from '@db/users.json';
 import { paginate } from 'src/common/pagination/paginate';
+import { UsersStore } from './users.store';
 
 const users = plainToClass(User, usersJson);
 
@@ -19,6 +20,7 @@ const fuse = new Fuse(users, options);
 
 @Injectable()
 export class UsersService {
+  constructor(private readonly userStore: UsersStore) {}
   private users: User[] = users;
 
   create(createUserDto: CreateUserDto) {
@@ -69,8 +71,8 @@ export class UsersService {
     };
   }
 
-  findOne(id: number) {
-    return this.users.find((user) => user.id === id);
+  async findOne(id: number) {
+    return await this.userStore.findById(id);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

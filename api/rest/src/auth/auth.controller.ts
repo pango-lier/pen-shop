@@ -22,6 +22,9 @@ import {
 import { LocalAuthGuard } from './jwt-auth/guards/local-auth.guard';
 import { RefreshTokenGuard } from './jwt-auth/guards/refresh-token-auth.guard';
 import { jwtAuthGuard } from './jwt-auth/guards/jwt-auth.guard';
+import { CurrentUser } from './jwt-auth/decorator/user.decorator';
+import { JwtPayload } from './jwt-auth/interface/jwt-payload.interface';
+import { ICurrentUser } from './jwt-auth/interface/authenticated-user.interface';
 
 @Controller()
 export class AuthController {
@@ -85,12 +88,15 @@ export class AuthController {
 
   @UseGuards(jwtAuthGuard)
   @Get('me')
-  me() {
-    return this.authService.me();
+  me(@CurrentUser() user: ICurrentUser) {
+    return this.authService.me(+user.id);
   }
   @Post('add-points')
-  addWalletPoints(@Body() addPointsDto: any) {
-    return this.authService.me();
+  addWalletPoints(
+    @Body() addPointsDto: any,
+    @CurrentUser() user: ICurrentUser,
+  ) {
+    return this.authService.me(+user.id);
   }
   @Post('contact-us')
   contactUs(@Body() addPointsDto: any) {
