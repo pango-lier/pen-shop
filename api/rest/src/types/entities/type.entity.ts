@@ -1,11 +1,16 @@
 import { Attachment } from 'src/common/entities/attachment.entity';
-import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, ManyToMany, OneToMany, OneToOne } from 'typeorm';
+import { CoreEntity, CoreSoftEntity } from 'src/common/entities/core.entity';
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
-export class Banner {
-  id: number;
+@Entity()
+export class Banner extends CoreEntity {
+  @Column({ type: 'varchar', nullable: true })
   title?: string;
+
+  @Column({ type: 'tinytext', nullable: true })
   description?: string;
+
+  @OneToOne(() => Attachment, { cascade: true })
   image: Attachment;
 }
 
@@ -15,7 +20,7 @@ export class TypeSettings {
   productCard: string;
 }
 @Entity()
-export class Type extends CoreEntity {
+export class Type extends CoreSoftEntity {
   @Column({ type: 'varchar' })
   name: string;
 
@@ -28,7 +33,7 @@ export class Type extends CoreEntity {
   @Column({ type: 'varchar' })
   icon: string;
 
-  @Column({ type: 'json', nullable: true })
+  @ManyToOne(() => Banner, { cascade: true })
   banners?: Banner[];
 
   @ManyToMany(() => Attachment)
@@ -40,6 +45,6 @@ export class Type extends CoreEntity {
   @Column({ type: 'varchar', length: 4 })
   language: string;
 
-  @Column({ type: 'simple-array' })
-  translated_languages: string[];
+  @Column({ type: 'simple-array', nullable: true })
+  translated_languages?: string[];
 }

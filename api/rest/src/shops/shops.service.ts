@@ -63,7 +63,7 @@ export class ShopsService {
 
   async approveShop(id: number) {
     const user: UpdateAproveShopDto = {
-      is_active: false,
+      is_active: true,
     }
     return await this.shopStore.update(id, user);
   }
