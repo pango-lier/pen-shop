@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto, UserPaginator } from './dto/get-users.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateActiveUserDto, UpdateUserDto } from './dto/update-user.dto';
 import Fuse from 'fuse.js';
 
 import { User } from './entities/user.entity';
 import usersJson from '@db/users.json';
 import { paginate } from 'src/common/pagination/paginate';
 import { UsersStore } from './users.store';
+import { IPaginate } from 'src/common/paginate/interface/paginate.interface';
 
 const users = plainToClass(User, usersJson);
 
@@ -20,86 +21,44 @@ const fuse = new Fuse(users, options);
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userStore: UsersStore) {}
+  constructor(private readonly userStore: UsersStore) { }
   private users: User[] = users;
 
-  create(createUserDto: CreateUserDto) {
-    return this.users[0];
+  async create(createUserDto: CreateUserDto) {
+    return await this.userStore.create(createUserDto);
   }
 
-  async getUsers({
-    text,
-    limit,
-    page,
-    search,
-  }: GetUsersDto): Promise<UserPaginator> {
-    if (!page) page = 1;
-    if (!limit) limit = 30;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    let data: User[] = this.users;
-    if (text?.replace(/%/g, '')) {
-      data = fuse.search(text)?.map(({ item }) => item);
-    }
-
-    if (search) {
-      const parseSearchParams = search.split(';');
-      const searchText: any = [];
-      for (const searchParam of parseSearchParams) {
-        const [key, value] = searchParam.split(':');
-        // TODO: Temp Solution
-        if (key !== 'slug') {
-          searchText.push({
-            [key]: value,
-          });
-        }
-      }
-
-      data = fuse
-        .search({
-          $and: searchText,
-        })
-        ?.map(({ item }) => item);
-    }
-
-    const results = data.slice(startIndex, endIndex);
-    const url = `/users?limit=${limit}`;
-
-    return {
-      data: results,
-      ...paginate(data.length, page, limit, results.length, url),
-    };
+  async getUsers(paginate: IPaginate): Promise<UserPaginator> {
+    return await this.userStore.findPaginate(paginate)
   }
 
   async findOne(id: number) {
     return await this.userStore.findById(id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.users[0];
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    return await this.userStore.update(id, updateUserDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    return await this.userStore.repo().softDelete(id);
   }
 
   makeAdmin(user_id: string) {
     return this.users.find((u) => u.id === Number(user_id));
   }
 
-  banUser(id: number) {
-    const user = this.users.find((u) => u.id === Number(id));
-
-    user.is_active = !user.is_active;
-
-    return user;
+  async banUser(id: number) {
+    const update: UpdateActiveUserDto = {
+      is_active: false
+    }
+    return await this.userStore.update(id, update);
   }
 
-  activeUser(id: number) {
-    const user = this.users.find((u) => u.id === Number(id));
-
-    user.is_active = !user.is_active;
-
-    return user;
+  async activeUser(id: number) {
+    const update: UpdateActiveUserDto = {
+      is_active: true
+    }
+    return await this.userStore.update(id, update);
   }
 }

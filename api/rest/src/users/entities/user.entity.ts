@@ -1,5 +1,5 @@
 import { Address } from 'src/addresses/entities/address.entity';
-import { CoreEntity } from 'src/common/entities/core.entity';
+import { CoreSoftEntity } from 'src/common/entities/core.entity';
 // import { Order } from 'src/orders/entities/order.entity';
 import { Shop } from 'src/shops/entities/shop.entity';
 import {
@@ -18,7 +18,7 @@ import { Exclude } from 'class-transformer';
 import { Permission } from './permissions.entity';
 
 @Entity()
-export class User extends CoreEntity {
+export class User extends CoreSoftEntity {
   @Column({ type: 'varchar' })
   name: string;
 

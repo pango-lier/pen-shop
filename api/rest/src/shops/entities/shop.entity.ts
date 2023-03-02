@@ -1,6 +1,6 @@
 import { UserAddress } from 'src/addresses/entities/address.entity';
 import { Attachment } from 'src/common/entities/attachment.entity';
-import { CoreEntity } from 'src/common/entities/core.entity';
+import { CoreEntity, CoreSoftEntity } from 'src/common/entities/core.entity';
 import { Location, ShopSocials } from 'src/settings/entities/setting.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -22,7 +22,7 @@ export class ShopSettings {
 }
 
 @Entity()
-export class Shop extends CoreEntity {
+export class Shop extends CoreSoftEntity {
   @Column({ type: 'bigint', unsigned: true })
   owner_id: number;
 

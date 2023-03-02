@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { CreateShopDto } from './dto/create-shop.dto';
-import { UpdateShopDto } from './dto/update-shop.dto';
+import { UpdateAproveShopDto, UpdateShopDto } from './dto/update-shop.dto';
 import { Shop } from './entities/shop.entity';
 import shopsJson from '@db/shops.json';
 import Fuse from 'fuse.js';
 import { GetShopsDto } from './dto/get-shops.dto';
 import { paginate } from 'src/common/pagination/paginate';
 import { GetStaffsDto } from './dto/get-staffs.dto';
+import { ShopsStore } from './shops.store';
+import { query } from 'express';
 
 const shops = plainToClass(Shop, shopsJson);
 const options = {
@@ -18,81 +20,51 @@ const fuse = new Fuse(shops, options);
 
 @Injectable()
 export class ShopsService {
+  constructor(private readonly shopStore: ShopsStore) { }
   private shops: Shop[] = shops;
 
-  create(createShopDto: CreateShopDto) {
-    return this.shops[0];
+  async create(createShopDto: CreateShopDto) {
+    return await this.shopStore.create(createShopDto);
   }
 
-  getShops({ search, limit, page }: GetShopsDto) {
-    if (!page) page = 1;
+  async getShops(paginate: GetShopsDto) {
+    return await this.shopStore.findPaginate(paginate);
+  }
 
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    let data: Shop[] = this.shops;
-    if (search) {
-      const parseSearchParams = search.split(';');
-      for (const searchParam of parseSearchParams) {
-        const [key, value] = searchParam.split(':');
-        // data = data.filter((item) => item[key] === value);
-        data = fuse.search(value)?.map(({ item }) => item);
-      }
+  async getStaffs(paginate: GetStaffsDto) {
+    return await this.shopStore.findStaffPaginate(paginate, paginate.shop_id);
+  }
+
+  async getShop(slug: string): Promise<Shop> {
+    return await this.shopStore.findBySlug(slug);
+  }
+
+  async update(id: number, updateShopDto: UpdateShopDto) {
+    return await this.shopStore.update(id, updateShopDto);
+  }
+
+  async approve(id: number) {
+    const user: UpdateAproveShopDto = {
+      is_active: true,
     }
-    // if (text?.replace(/%/g, '')) {
-    //   data = fuse.search(text)?.map(({ item }) => item);
-    // }
-    const results = data.slice(startIndex, endIndex);
-    const url = `/shops?search=${search}&limit=${limit}`;
-
-    return {
-      data: results,
-      ...paginate(data.length, page, limit, results.length, url),
-    };
+    return await this.shopStore.update(id, user);
   }
 
-  getStaffs({ shop_id, limit, page }: GetStaffsDto) {
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    let staffs: Shop['staffs'] = [];
-    if (shop_id) {
-      staffs = this.shops.find((p) => p.id === Number(shop_id))?.staffs ?? [];
+  async remove(id: number) {
+    return await this.shopStore.repo().softDelete(id);
+  }
+
+  async disapproveShop(id: number) {
+    const user: UpdateAproveShopDto = {
+      is_active: false,
     }
-    const results = staffs?.slice(startIndex, endIndex);
-    const url = `/staffs?limit=${limit}`;
-
-    return {
-      data: results,
-      ...paginate(staffs?.length, page, limit, results?.length, url),
-    };
+    return await this.shopStore.update(id, user);
   }
 
-  getShop(slug: string): Shop {
-    return this.shops.find((p) => p.slug === slug);
-  }
-
-  update(id: number, updateShopDto: UpdateShopDto) {
-    return this.shops[0];
-  }
-
-  approve(id: number) {
-    return `This action removes a #${id} shop`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} shop`;
-  }
-
-  disapproveShop(id: number) {
-    const shop = this.shops.find((s) => s.id === Number(id));
-    shop.is_active = false;
-
-    return shop;
-  }
-
-  approveShop(id: number) {
-    const shop = this.shops.find((s) => s.id === Number(id));
-    shop.is_active = true;
-
-    return shop;
+  async approveShop(id: number) {
+    const user: UpdateAproveShopDto = {
+      is_active: false,
+    }
+    return await this.shopStore.update(id, user);
   }
 }

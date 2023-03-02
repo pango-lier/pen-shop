@@ -35,6 +35,7 @@ import { WishlistsModule } from './wishlists/wishlists.module';
 import { WithdrawsModule } from './withdraws/withdraws.module';
 import { EnvModule } from './env/env.module';
 import { DatabaseModule } from './database/database.module';
+import { PaginateModule } from './common/paginate/paginate.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -76,6 +77,7 @@ import { DatabaseModule } from './database/database.module';
     PaymentModule,
     EnvModule,
     DatabaseModule,
+    PaginateModule
   ],
   controllers: [],
   providers: [],

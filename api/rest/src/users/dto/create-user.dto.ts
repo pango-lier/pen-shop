@@ -16,6 +16,7 @@ export class CreateUserDto extends PickType(User, [
   'username',
   'refreshToken',
   'rememberToken',
+  'is_active',
 ]) {
   // address: CreateAddressDto[];
   profile: CreateProfileDto;
