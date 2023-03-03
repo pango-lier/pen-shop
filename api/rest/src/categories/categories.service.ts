@@ -7,6 +7,7 @@ import { Category } from './entities/category.entity';
 import Fuse from 'fuse.js';
 import categoriesJson from '@db/categories.json';
 import { paginate } from 'src/common/pagination/paginate';
+import { CategoryStore } from './categories.store';
 
 const categories = plainToClass(Category, categoriesJson);
 const options = {
@@ -17,13 +18,32 @@ const fuse = new Fuse(categories, options);
 
 @Injectable()
 export class CategoriesService {
+  constructor(private readonly categoryStore: CategoryStore) {}
   private categories: Category[] = categories;
 
   create(createCategoryDto: CreateCategoryDto) {
-    return this.categories[0];
+    return this.categoryStore.create(createCategoryDto);
   }
 
-  getCategories({ limit, page, search, parent }: GetCategoriesDto) {
+  async getCategories(getCategories: GetCategoriesDto) {
+    console.log(getCategories);
+    const results = await this.categoryStore.all(getCategories);
+    console.log(results);
+    const totalItems = await this.categoryStore.totalItems(getCategories);
+    const url = `/categories?search=${getCategories.search}&limit=${getCategories.limit}&parent=${getCategories.parent}`;
+    return {
+      data: results,
+      ...paginate(
+        totalItems,
+        getCategories.page,
+        getCategories.limit,
+        results.length,
+        url,
+      ),
+    };
+  }
+
+  getCategoriesOld({ limit, page, search, parent }: GetCategoriesDto) {
     if (!page) page = 1;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;

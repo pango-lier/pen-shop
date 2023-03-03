@@ -11,6 +11,7 @@ import {
 import { Attachment } from '../../common/entities/attachment.entity';
 import { CoreEntity, CoreSoftEntity } from '../../common/entities/core.entity';
 import { Banner } from './banner.entity';
+import { Category } from '../../categories/entities/category.entity';
 
 export class TypeSettings {
   isHome: boolean;
@@ -45,4 +46,7 @@ export class Type extends CoreSoftEntity {
 
   @Column({ type: 'simple-array', nullable: true })
   translated_languages?: string[];
+
+  @OneToMany(() => Category, (category) => category.type, { nullable: true })
+  categories?: Category;
 }
