@@ -21,12 +21,18 @@ export class AttributeStore {
   async create(createDto: CreateAttributeDto) {
     const create = this.baseRepo.create(createDto);
     create.slug = slugify(create.name);
+    create.translated_languages = ['en'];
     return await this.baseRepo.save(create);
   }
 
   async update(id: number, updateDto: UpdateAttributeDto) {
     const create = await this.baseRepo.findOne({ where: { id } });
     create.slug = slugify(updateDto.name);
+    updateDto.values = updateDto.values?.map((i) => {
+      const { id, ...rest } = i;
+      if (i.id) return { ...i, id: id + '' };
+      return rest as any;
+    });
     return await this.baseRepo.save({ ...create, ...updateDto });
   }
 
@@ -36,17 +42,27 @@ export class AttributeStore {
     });
   }
 
-  async all() {
-    return await this.baseRepo.find();
-  }
-
-  async findBySlug(slug: string) {
-    return await this.baseRepo.findOne({
-      where: [{ slug }],
+  async all(attribute) {
+    console.log(attribute);
+    return await this.baseRepo.find({
+      relations: {
+        values: true,
+      },
     });
   }
 
-  async findPaginate(paginate: IPaginate) {
+  async findByIdOrSlug(idOrSlug: string) {
+    let filter: any = { slug: idOrSlug };
+    if (Number(idOrSlug)) filter = { id: Number(idOrSlug) };
+    return await this.baseRepo.findOne({
+      where: filter,
+      relations: {
+        values: true,
+      },
+    });
+  }
+
+  async findPaginate(paginate?: IPaginate) {
     const query = this.baseRepo.createQueryBuilder('attribute');
     //  query.leftJoinAndSelect('types.banners', 'banners');
     return await this.paginate.queryFilter(query, paginate, ['id', 'name'], {
@@ -59,6 +75,10 @@ export class AttributeStore {
     return await this.baseRepo.findOne({
       where: { name },
     });
+  }
+
+  async softDelete(id: number) {
+    return await this.baseRepo.softDelete(id);
   }
 
   repo() {

@@ -4,8 +4,8 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class AttributeValue extends CoreEntity {
-  @Column({ type: 'bigint', unsigned: true })
-  shop_id: number;
+  @Column({ type: 'varchar', length: 4, default: 'en' })
+  language: string;
 
   @Column({ type: 'varchar' })
   value: string;
@@ -13,7 +13,10 @@ export class AttributeValue extends CoreEntity {
   @Column({ type: 'varchar', nullable: true })
   meta?: string;
 
-  @ManyToOne(() => Attribute, (v) => v.values)
+  @ManyToOne(() => Attribute, (v) => v.values, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'attribute_id' })
   attribute: Attribute;
 }

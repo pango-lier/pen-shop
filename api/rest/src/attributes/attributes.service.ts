@@ -4,32 +4,35 @@ import { UpdateAttributeDto } from './dto/update-attribute.dto';
 import attributesJson from '@db/attributes.json';
 import { Attribute } from './entities/attribute.entity';
 import { plainToClass } from 'class-transformer';
+import { AttributeStore } from './attributes.store';
+import { GetAttributesArgs, GetProductsDto } from './dto/get-attributes.dto';
 
 const attributes = plainToClass(Attribute, attributesJson);
 
 @Injectable()
 export class AttributesService {
+  constructor(private readonly attributeStore: AttributeStore) {}
+
   private attributes: Attribute[] = attributes;
 
   create(createAttributeDto: CreateAttributeDto) {
-    return this.attributes[0];
+    return this.attributeStore.create(createAttributeDto);
   }
 
-  findAll() {
-    return this.attributes;
+  findAll(attribute: GetProductsDto) {
+    return this.attributeStore.all(attribute);
   }
 
   findOne(param: string) {
-    return this.attributes.find(
-      (p) => p.id === Number(param) || p.slug === param,
-    );
+    console.log(param);
+    return this.attributeStore.findByIdOrSlug(param);
   }
 
   update(id: number, updateAttributeDto: UpdateAttributeDto) {
-    return this.attributes[0];
+    return this.attributeStore.update(id, updateAttributeDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} attribute`;
+    return this.attributeStore.softDelete(id);
   }
 }

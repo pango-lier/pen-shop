@@ -69,7 +69,13 @@ export class PaginateService {
     const result = await query[options.getQuery]();
     return {
       data: result,
-      ...paginate(total, filter.pageIndex, filter.pageSize, result.length, options.defaultTable)
-    }
+      ...paginate(
+        total,
+        filter.pageIndex,
+        filter.pageSize,
+        result.length,
+        options.defaultTable,
+      ),
+    };
   }
 }

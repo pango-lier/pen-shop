@@ -1,10 +1,10 @@
-import { CoreEntity } from 'src/common/entities/core.entity';
+import { CoreEntity, CoreSoftEntity } from 'src/common/entities/core.entity';
 import { Shop } from 'src/shops/entities/shop.entity';
 import { AttributeValue } from './attribute-value.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
-export class Attribute extends CoreEntity {
+export class Attribute extends CoreSoftEntity {
   @Column({ type: 'varchar' })
   name: string;
 
@@ -18,7 +18,11 @@ export class Attribute extends CoreEntity {
   @Column({ type: 'varchar' })
   slug: string;
 
-  @OneToMany(() => AttributeValue, (attributeValue) => attributeValue.attribute)
+  @OneToMany(
+    () => AttributeValue,
+    (attributeValue) => attributeValue.attribute,
+    { cascade: true },
+  )
   values: AttributeValue[];
 
   @Column({ type: 'varchar', length: 4 })
