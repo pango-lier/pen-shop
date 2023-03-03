@@ -9,22 +9,32 @@ const data = [
     username: 'kinhdoanh.bt@gmail.com',
     email: 'kinhdoanh.bt@gmail.com',
     password: encodePwd('hellokitty'),
-    role_name: 'super-admin',
+    role_name: 'super_admin',
     permissions: [
       {
         id: '1',
-        name: 'super-admin',
+        name: 'super_admin',
         displayName: 'SuperAdmin',
       },
       {
         id: '2',
-        name: 'customer',
-        displayName: 'Customer',
+        name: 'admin',
+        displayName: 'Admin',
       },
       {
         id: '3',
         name: 'store_owner',
         displayName: 'Store Owner',
+      },
+      {
+        id: '4',
+        name: 'staff',
+        displayName: 'staff',
+      },
+      {
+        id: '5',
+        name: 'customer',
+        displayName: 'Customer',
       },
     ],
   },

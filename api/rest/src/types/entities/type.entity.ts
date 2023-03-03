@@ -1,18 +1,16 @@
-import { Attachment } from 'src/common/entities/attachment.entity';
-import { CoreEntity, CoreSoftEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
-
-@Entity()
-export class Banner extends CoreEntity {
-  @Column({ type: 'varchar', nullable: true })
-  title?: string;
-
-  @Column({ type: 'tinytext', nullable: true })
-  description?: string;
-
-  @OneToOne(() => Attachment, { cascade: true })
-  image: Attachment;
-}
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
+import { Attachment } from '../../common/entities/attachment.entity';
+import { CoreEntity, CoreSoftEntity } from '../../common/entities/core.entity';
+import { Banner } from './banner.entity';
 
 export class TypeSettings {
   isHome: boolean;
@@ -33,10 +31,10 @@ export class Type extends CoreSoftEntity {
   @Column({ type: 'varchar' })
   icon: string;
 
-  @ManyToOne(() => Banner, { cascade: true })
+  @Column({ type: 'json', nullable: true })
   banners?: Banner[];
 
-  @ManyToMany(() => Attachment)
+  @Column({ type: 'json', nullable: true })
   promotional_sliders?: Attachment[];
 
   @Column({ type: 'json', nullable: true })

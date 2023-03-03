@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { CreateBannerDto, CreateTypeDto } from './dto/create-type.dto';
 import { UpdateTypeDto } from './dto/update-type.dto';
-import { Banner, Type } from './entities/type.entity';
+import { Type } from './entities/type.entity';
 
 import typesJson from '@db/types.json';
 import Fuse from 'fuse.js';
@@ -19,14 +19,12 @@ const fuse = new Fuse(types, options);
 
 @Injectable()
 export class TypesService {
-  constructor(private readonly typeStore: TypesStore) {
-
-  }
+  constructor(private readonly typeStore: TypesStore) {}
   private types: Type[] = types;
 
   async getTypes(typeDtos: GetTypesDto) {
     console.log(typeDtos);
-    const paginate: IPaginate = {}
+    const paginate: IPaginate = {};
     return (await this.typeStore.findPaginate(paginate)).data;
   }
 
@@ -69,8 +67,10 @@ export class TypesService {
         title: i.title,
         description: i?.description,
         image: {
-          original: "https://admin-pickbazar-rest.vercel.app/_next/image?url=https%3A%2F%2Fpickbazarlaravel.s3.ap-southeast-1.amazonaws.com%2F1847%2Fconversions%2F275640572_108626431775341_6628217905140713890_n-thumbnail.jpg&w=1920&q=75",
-          thumbnail: "https://admin-pickbazar-rest.vercel.app/_next/image?url=https%3A%2F%2Fpickbazarlaravel.s3.ap-southeast-1.amazonaws.com%2F1847%2Fconversions%2F275640572_108626431775341_6628217905140713890_n-thumbnail.jpg&w=1920&q=75",
+          original:
+            'https://admin-pickbazar-rest.vercel.app/_next/image?url=https%3A%2F%2Fpickbazarlaravel.s3.ap-southeast-1.amazonaws.com%2F1847%2Fconversions%2F275640572_108626431775341_6628217905140713890_n-thumbnail.jpg&w=1920&q=75',
+          thumbnail:
+            'https://admin-pickbazar-rest.vercel.app/_next/image?url=https%3A%2F%2Fpickbazarlaravel.s3.ap-southeast-1.amazonaws.com%2F1847%2Fconversions%2F275640572_108626431775341_6628217905140713890_n-thumbnail.jpg&w=1920&q=75',
         },
       } as CreateBannerDto;
     });
@@ -92,6 +92,6 @@ export class TypesService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} type`;
+    return this.typeStore.repo().softDelete(id);
   }
 }

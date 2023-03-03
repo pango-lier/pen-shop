@@ -1,5 +1,5 @@
-import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, OneToOne } from 'typeorm';
+import { CoreEntity } from './core.entity';
 
 @Entity()
 export class Attachment extends CoreEntity {

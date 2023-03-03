@@ -1,6 +1,6 @@
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Attribute } from './attribute.entity';
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class AttributeValue extends CoreEntity {
@@ -13,6 +13,7 @@ export class AttributeValue extends CoreEntity {
   @Column({ type: 'varchar', nullable: true })
   meta?: string;
 
-  @OneToMany(() => Attribute, (v) => v.values)
+  @ManyToOne(() => Attribute, (v) => v.values)
+  @JoinColumn({ name: 'attribute_id' })
   attribute: Attribute;
 }

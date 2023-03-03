@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -11,11 +11,11 @@ import { IPaginate } from 'src/common/paginate/interface/paginate.interface';
 export class UsersStore {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
-    private readonly paginate: PaginateService
-  ) { }
+    private readonly paginate: PaginateService,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const create = this.userRepo.create(createUserDto)
+    const create = this.userRepo.create(createUserDto);
     return await this.userRepo.save(create);
   }
 
@@ -27,18 +27,42 @@ export class UsersStore {
   async findById(id: number) {
     return await this.userRepo.findOne({
       where: [{ id }],
+      relations: {
+        permissions: true,
+      },
     });
+  }
+
+  async findByIdOrFailed(id: number) {
+    try {
+      return await this.userRepo.findOne({
+        where: [{ id }],
+        relations: {
+          permissions: true,
+        },
+      });
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
   }
 
   async findPaginate(paginate: IPaginate) {
     const query = this.userRepo.createQueryBuilder('users');
     query.leftJoinAndSelect('users.permissions', 'permissions');
-    return await this.paginate.queryFilter(query, paginate, ['id', 'email', 'name'], { defaultTable: 'users', getQuery: 'getMany' });
+    return await this.paginate.queryFilter(
+      query,
+      paginate,
+      ['id', 'email', 'name'],
+      { defaultTable: 'users', getQuery: 'getMany' },
+    );
   }
 
   async findByUsername(username: string) {
     return await this.userRepo.findOne({
       where: { username },
+      relations: {
+        permissions: true,
+      },
     });
   }
 
@@ -46,7 +70,10 @@ export class UsersStore {
     return await this.userRepo.create(createUserDto);
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto | UpdateActiveUserDto) {
+  async updateUser(
+    id: number,
+    updateUserDto: UpdateUserDto | UpdateActiveUserDto,
+  ) {
     return await this.userRepo.update(id, updateUserDto);
   }
 

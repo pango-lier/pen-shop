@@ -5,8 +5,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateJwtAuthDto } from './dto/create-jwt-auth.dto';
-import { UpdateJwtAuthDto } from './dto/update-jwt-auth.dto';
 import { User } from '../../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './interface/jwt-payload.interface';
@@ -33,6 +31,7 @@ export class JwtAuthService {
     await this.setCurrentRefreshToken(refreshToken, user.id);
     return {
       userData: { id: user.id, username: user.username, email: user.email },
+      permissions: user.permissions?.map((i) => i.name) || [],
       accessToken,
       refreshToken,
       access_token: accessToken,
@@ -54,7 +53,7 @@ export class JwtAuthService {
   }
 
   async refreshTokens(userId: number, refreshToken: string) {
-    const user = await this.userStore.findById(+userId);
+    const user = await this.userStore.findByIdOrFailed(+userId);
     if (!user || !user.refreshToken)
       throw new ForbiddenException('Access Denied');
     const refreshTokenMatches = await bcrypt.compare(
@@ -69,6 +68,7 @@ export class JwtAuthService {
     await this.setCurrentRefreshToken(tokens.refreshToken, user.id);
     return {
       userData: { id: user.id, username: user.username, email: user.email },
+      permissions: user.permissions?.map((i) => i.name) || [],
       accessToken: tokens.accessToken,
       refreshToken,
       access_token: tokens.accessToken,
@@ -86,15 +86,6 @@ export class JwtAuthService {
       options.expiresIn = expiration;
     }
     return options;
-  }
-
-  async getMe(authUser: AuthenticatedUser): Promise<User> {
-    try {
-      const user = await this.userStore.findById(authUser.id);
-      return user;
-    } catch (e) {
-      throw new UnauthorizedException();
-    }
   }
 
   async setCurrentRefreshToken(refreshToken: string, userId: number) {

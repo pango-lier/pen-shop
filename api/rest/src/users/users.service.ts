@@ -21,7 +21,7 @@ const fuse = new Fuse(users, options);
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userStore: UsersStore) { }
+  constructor(private readonly userStore: UsersStore) {}
   private users: User[] = users;
 
   async create(createUserDto: CreateUserDto) {
@@ -29,7 +29,7 @@ export class UsersService {
   }
 
   async getUsers(paginate: IPaginate): Promise<UserPaginator> {
-    return await this.userStore.findPaginate(paginate)
+    return await this.userStore.findPaginate(paginate);
   }
 
   async findOne(id: number) {
@@ -50,15 +50,15 @@ export class UsersService {
 
   async banUser(id: number) {
     const update: UpdateActiveUserDto = {
-      is_active: false
-    }
+      is_active: false,
+    };
     return await this.userStore.update(id, update);
   }
 
   async activeUser(id: number) {
     const update: UpdateActiveUserDto = {
-      is_active: true
-    }
+      is_active: true,
+    };
     return await this.userStore.update(id, update);
   }
 }

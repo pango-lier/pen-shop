@@ -49,7 +49,7 @@ export class AuthService {
     const result = await this.jwtAuthService.login(loginInput);
     return {
       token: result.accessToken,
-      permissions: ['super_admin', 'customer'],
+      permissions: result.permissions,
       result,
     };
   }
@@ -61,7 +61,7 @@ export class AuthService {
     );
     return {
       token: result.accessToken,
-      permissions: ['super_admin', 'customer'],
+      permissions: result.permissions,
       result,
     };
   }
@@ -156,7 +156,7 @@ export class AuthService {
   //   return this.users.find((user) => user.id === getUserArgs.id);
   // }
   async me(userId: number): Promise<User> {
-    return await this.userStore.findById(userId);
+    return await this.userStore.findByIdOrFailed(userId);
   }
 
   // updateUser(id: number, updateUserInput: UpdateUserInput) {
