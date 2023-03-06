@@ -12,7 +12,7 @@ import { ShopsStore } from './shops.store';
 import { User } from 'src/users/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Shop,User])],
+  imports: [TypeOrmModule.forFeature([Shop, User])],
   controllers: [
     ShopsController,
     StaffsController,
@@ -21,4 +21,4 @@ import { User } from 'src/users/entities/user.entity';
   ],
   providers: [ShopsService, ShopsStore],
 })
-export class ShopsModule { }
+export class ShopsModule {}
