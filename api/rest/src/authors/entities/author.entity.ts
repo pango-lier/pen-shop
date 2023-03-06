@@ -1,7 +1,7 @@
 import { CoreEntity } from '../../common/entities/core.entity';
 import { Attachment } from '../../common/entities/attachment.entity';
 import { ShopSocials } from '../../settings/entities/setting.entity';
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity()
 export class Author extends CoreEntity {
@@ -12,12 +12,14 @@ export class Author extends CoreEntity {
   born?: string;
 
   @OneToOne(() => Attachment, { nullable: true })
+  @JoinColumn({ name: 'cover_image_id' })
   cover_image?: Attachment;
 
   @Column({ type: 'tinytext', nullable: true })
   death?: string;
 
   @OneToOne(() => Attachment, { nullable: true })
+  @JoinColumn({ name: 'image_id' })
   image?: Attachment;
 
   @Column({ type: 'boolean', nullable: true })
@@ -29,7 +31,7 @@ export class Author extends CoreEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'bigint', nullable: true })
+  @Column({ type: 'bigint', nullable: true, default: 0 })
   products_count?: number;
 
   @Column({ type: 'tinytext', nullable: true })
@@ -41,7 +43,7 @@ export class Author extends CoreEntity {
   @Column({ type: 'json', nullable: true })
   socials?: ShopSocials;
 
-  @Column({ type: 'varchar', length: 4, nullable: true })
+  @Column({ type: 'varchar', length: 4, nullable: true, default: 'en' })
   language?: string;
 
   @Column({ type: 'simple-array', nullable: true })

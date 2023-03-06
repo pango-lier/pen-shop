@@ -8,6 +8,7 @@ import { GetAuthorDto } from './dto/get-author.dto';
 import { paginate } from '../common/pagination/paginate';
 import { GetTopAuthorsDto } from './dto/get-top-authors.dto';
 import { CreateAuthorDto } from './dto/create-author.dto';
+import { AuthorStore } from './authors.store';
 
 const authors = plainToClass(Author, authorsJson);
 
@@ -20,33 +21,35 @@ const fuse = new Fuse(authors, options);
 
 @Injectable()
 export class AuthorsService {
+  constructor(private readonly authorStore: AuthorStore) {}
   private authors: Author[] = authors;
 
   create(createAuthorDto: CreateAuthorDto) {
-    return this.authors[0];
+    return this.authorStore.create(createAuthorDto);
   }
 
-  getAuthors({ page, limit, search }: GetAuthorDto) {
-    if (!page) page = 1;
-    if (!limit) limit = 30;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    let data: Author[] = this.authors;
-    if (search) {
-      const parseSearchParams = search.split(';');
-      for (const searchParam of parseSearchParams) {
-        const [key, value] = searchParam.split(':');
-        data = fuse.search(value)?.map(({ item }) => item);
-      }
-    }
+  getAuthors(paginate: GetAuthorDto) {
+    return this.authorStore.findPaginate(paginate);
+    // if (!page) page = 1;
+    // if (!limit) limit = 30;
+    // const startIndex = (page - 1) * limit;
+    // const endIndex = page * limit;
+    // let data: Author[] = this.authors;
+    // if (search) {
+    //   const parseSearchParams = search.split(';');
+    //   for (const searchParam of parseSearchParams) {
+    //     const [key, value] = searchParam.split(':');
+    //     data = fuse.search(value)?.map(({ item }) => item);
+    //   }
+    // }
 
-    const results = data.slice(startIndex, endIndex);
+    // const results = data.slice(startIndex, endIndex);
 
-    const url = `/authors?search=${search}&limit=${limit}`;
-    return {
-      data: results,
-      ...paginate(data.length, page, limit, results.length, url),
-    };
+    // const url = `/authors?search=${search}&limit=${limit}`;
+    // return {
+    //   data: results,
+    //   ...paginate(data.length, page, limit, results.length, url),
+    // };
   }
 
   getAuthorBySlug(slug: string): Author {
