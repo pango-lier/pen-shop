@@ -35,3 +35,17 @@ export class CoreSoftEntity {
   @Type(() => Date)
   deleted_at?: Date;
 }
+
+
+export class CoreEntitEx {
+  @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true })
+  id: string | number;
+
+  @CreateDateColumn({ type: 'timestamp', nullable: true })
+  @Type(() => Date)
+  created_at?: Date;
+
+  @UpdateDateColumn({ type: 'timestamp', nullable: true })
+  @Type(() => Date)
+  updated_at?: Date;
+}

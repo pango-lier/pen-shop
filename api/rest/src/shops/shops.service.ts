@@ -10,6 +10,8 @@ import { paginate } from 'src/common/pagination/paginate';
 import { GetStaffsDto } from './dto/get-staffs.dto';
 import { ShopsStore } from './shops.store';
 import { query } from 'express';
+import { AddStaffDto } from 'src/users/dto/add-staff.dto';
+import { UsersStore } from 'src/users/users.store';
 
 const shops = plainToClass(Shop, shopsJson);
 const options = {
@@ -20,11 +22,15 @@ const fuse = new Fuse(shops, options);
 
 @Injectable()
 export class ShopsService {
-  constructor(private readonly shopStore: ShopsStore) { }
+  constructor(private readonly shopStore: ShopsStore, private readonly userStore: UsersStore) { }
   private shops: Shop[] = shops;
 
   async create(createShopDto: CreateShopDto) {
     return await this.shopStore.create(createShopDto);
+  }
+
+  async addStaff(addStaffDto: AddStaffDto) {
+    return await this.userStore.addStaff(addStaffDto);
   }
 
   async getShops(paginate: GetShopsDto) {
@@ -48,6 +54,10 @@ export class ShopsService {
       is_active: true,
     }
     return await this.shopStore.update(id, user);
+  }
+
+  async removeStaff(id: number) {
+    return await this.userStore.softDelete(id);
   }
 
   async remove(id: number) {

@@ -18,6 +18,7 @@ import { UserPaginator } from 'src/users/dto/get-users.dto';
 import { CurrentUser } from 'src/auth/jwt-auth/decorator/user.decorator';
 import { ICurrentUser } from 'src/auth/jwt-auth/interface/authenticated-user.interface';
 import { jwtAuthGuard } from 'src/auth/jwt-auth/guards/jwt-auth.guard';
+import { AddStaffDto } from 'src/users/dto/add-staff.dto';
 
 
 @Controller('shops')
@@ -69,8 +70,8 @@ export class StaffsController {
   constructor(private readonly shopsService: ShopsService) { }
 
   @Post()
-  create(@Body() createShopDto: CreateShopDto) {
-    return this.shopsService.create(createShopDto);
+  create(@Body() addStaffDto: AddStaffDto) {
+    return this.shopsService.addStaff(addStaffDto);
   }
 
   @Get()
@@ -90,7 +91,7 @@ export class StaffsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.shopsService.remove(+id);
+    return this.shopsService.removeStaff(+id);
   }
 }
 

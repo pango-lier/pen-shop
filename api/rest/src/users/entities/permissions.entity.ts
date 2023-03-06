@@ -1,9 +1,9 @@
-import { CoreEntity } from 'src/common/entities/core.entity';
+import { CoreEntitEx, CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToMany } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
-export class Permission extends CoreEntity {
+export class Permission extends CoreEntitEx {
   @Column({ type: 'varchar' })
   name: string;
 

@@ -1,6 +1,7 @@
 import { PickType } from '@nestjs/swagger';
 import { CreateAddressDto } from 'src/addresses/dto/create-address.dto';
 import { User } from '../entities/user.entity';
+import { SyncPermissionDto } from './add-permission.dto';
 import { CreateProfileDto } from './create-profile.dto';
 
 enum Permission {
@@ -17,8 +18,9 @@ export class CreateUserDto extends PickType(User, [
   'refreshToken',
   'rememberToken',
   'is_active',
+  'shop_id',
 ]) {
   // address: CreateAddressDto[];
-  profile: CreateProfileDto;
-  // permission: Permission = Permission.CUSTOMER;
+  profile?: CreateProfileDto;
+  permissions?: SyncPermissionDto[];
 }
