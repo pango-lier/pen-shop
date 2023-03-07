@@ -7,6 +7,7 @@ import { Tag } from './entities/tag.entity';
 import tagsJson from '@db/tags.json';
 import { plainToClass } from 'class-transformer';
 import Fuse from 'fuse.js';
+import { TagsStore } from './tags.store';
 
 const tags = plainToClass(Tag, tagsJson);
 
@@ -18,55 +19,54 @@ const fuse = new Fuse(tags, options);
 
 @Injectable()
 export class TagsService {
+  constructor(private readonly tagStore: TagsStore) { }
   private tags: Tag[] = tags;
 
   create(createTagDto: CreateTagDto) {
-    return {
-      id: this.tags.length + 1,
-      ...createTagDto,
-    };
+    return this.tagStore.create(createTagDto);
   }
 
-  findAll({ page, limit, search }: GetTagsDto) {
-    if (!page) page = 1;
-    let data: Tag[] = this.tags;
+  findAll(getTagsDto: GetTagsDto) {
+    return this.tagStore.findPaginate(getTagsDto);
+    // if (!page) page = 1;
+    // let data: Tag[] = this.tags;
 
-    if (search) {
-      const parseSearchParams = search.split(';');
-      const searchText: any = [];
-      for (const searchParam of parseSearchParams) {
-        const [key, value] = searchParam.split(':');
-        // TODO: Temp Solution
-        if (key !== 'slug') {
-          searchText.push({
-            [key]: value,
-          });
-        }
-      }
+    // if (search) {
+    //   const parseSearchParams = search.split(';');
+    //   const searchText: any = [];
+    //   for (const searchParam of parseSearchParams) {
+    //     const [key, value] = searchParam.split(':');
+    //     // TODO: Temp Solution
+    //     if (key !== 'slug') {
+    //       searchText.push({
+    //         [key]: value,
+    //       });
+    //     }
+    //   }
 
-      data = fuse
-        .search({
-          $and: searchText,
-        })
-        ?.map(({ item }) => item);
-    }
+    //   data = fuse
+    //     .search({
+    //       $and: searchText,
+    //     })
+    //     ?.map(({ item }) => item);
+    // }
 
-    const url = `/tags?limit=${limit}`;
-    return {
-      data,
-      ...paginate(this.tags.length, page, limit, this.tags.length, url),
-    };
+    // const url = `/tags?limit=${limit}`;
+    // return {
+    //   data,
+    //   ...paginate(this.tags.length, page, limit, this.tags.length, url),
+    // };
   }
 
   findOne(param: string, language: string) {
-    return this.tags.find((p) => p.id === Number(param) || p.slug === param);
+    return this.tagStore.findByIdOrSlug(param, language);
   }
 
   update(id: number, updateTagDto: UpdateTagDto) {
-    return this.tags[0];
+    return this.tagStore.update(id, updateTagDto)
   }
 
   remove(id: number) {
-    return `This action removes a #${id} tag`;
+    return this.tagStore.softDelete(id);
   }
 }

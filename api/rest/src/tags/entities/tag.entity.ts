@@ -1,31 +1,36 @@
 import { Attachment } from 'src/common/entities/attachment.entity';
-import { CoreEntity } from 'src/common/entities/core.entity';
+import { CoreEntity, CoreSoftEntity } from 'src/common/entities/core.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { Type } from 'src/types/entities/type.entity';
-import { Column, Entity, ManyToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
 
 @Entity()
-export class Tag extends CoreEntity {
+export class Tag extends CoreSoftEntity {
   @Column({ type: 'varchar' })
   name: string;
 
   @Column({ type: 'varchar' })
   slug: string;
 
-  @Column({ type: 'bigint' })
-  parent: number;
+  // @Column({ type: 'bigint' })
+  // parent: number;
 
   @Column({ type: 'varchar' })
   details: string;
 
-  @OneToOne(() => Attachment)
-  image: Attachment;
+  @ManyToOne(() => Attachment, { nullable: true, cascade: true })
+  @JoinColumn({ name: 'image_id' })
+  image?: Attachment;
 
   @Column({ type: 'varchar' })
   icon: string;
 
-  @OneToOne(() => Type)
-  type: Type;
+  @Column({ type: 'bigint', unsigned: true })
+  type_id: number;
+
+  @ManyToOne(() => Type)
+  @JoinColumn({ name: 'type_id' })
+  type?: Type;
 
   @ManyToMany(() => Product)
   products: Product[];
