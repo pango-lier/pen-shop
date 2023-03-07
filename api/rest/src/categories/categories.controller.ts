@@ -23,8 +23,13 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll(@Query() query: GetCategoriesDto) {
+  findTreeAll(@Query() query: GetCategoriesDto) {
     return this.categoriesService.getCategories(query);
+  }
+
+  @Get()
+  findAll(@Query() query: GetCategoriesDto) {
+    return this.categoriesService.findAll(query);
   }
 
   @Get(':param')

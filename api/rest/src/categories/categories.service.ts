@@ -25,10 +25,12 @@ export class CategoriesService {
     return this.categoryStore.create(createCategoryDto);
   }
 
+  findAll(createCategoryDto: GetCategoriesDto) {
+    return this.categoryStore.findAll(createCategoryDto);
+  }
+
   async getCategories(getCategories: GetCategoriesDto) {
-    console.log(getCategories);
-    const results = await this.categoryStore.all(getCategories);
-    console.log(results);
+    const results = await this.categoryStore.findTrees(getCategories);
     const totalItems = await this.categoryStore.totalItems(getCategories);
     const url = `/categories?search=${getCategories.search}&limit=${getCategories.limit}&parent=${getCategories.parent}`;
     return {
@@ -43,7 +45,7 @@ export class CategoriesService {
     };
   }
 
-  getCategoriesOld({ limit, page, search, parent }: GetCategoriesDto) {
+  getCategories2({ limit, page, search, parent }: GetCategoriesDto) {
     if (!page) page = 1;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
@@ -85,6 +87,6 @@ export class CategoriesService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} category`;
+    return this.categoryStore.softDelete(id);
   }
 }

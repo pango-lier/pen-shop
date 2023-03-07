@@ -23,7 +23,6 @@ export class TypesService {
   private types: Type[] = types;
 
   async getTypes(typeDtos: GetTypesDto) {
-    console.log(typeDtos);
     const paginate: IPaginate = {};
     return (await this.typeStore.findPaginate(paginate)).data;
   }

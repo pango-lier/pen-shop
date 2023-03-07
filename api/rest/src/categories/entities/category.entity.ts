@@ -5,6 +5,7 @@ import { Type } from 'src/types/entities/type.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -33,6 +34,9 @@ export class Category {
   @UpdateDateColumn({ type: 'timestamp', nullable: true })
   updated_at?: Date;
 
+  @DeleteDateColumn({ type: 'timestamp', nullable: true })
+  deleted_at?: Date;
+
   @Column({ type: 'varchar' })
   name: string;
 
@@ -54,6 +58,9 @@ export class Category {
 
   @Column({ type: 'varchar', nullable: true })
   icon?: string;
+
+  @Column({ type: 'bigint', unsigned: true, nullable: true })
+  type_id?: string;
 
   @ManyToOne(() => Type, (type) => type.categories, { nullable: true })
   @JoinColumn({ name: 'type_id' })

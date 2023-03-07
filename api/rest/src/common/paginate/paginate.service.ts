@@ -2,10 +2,39 @@ import { Injectable } from '@nestjs/common';
 import { paginate } from 'src/common/pagination/paginate';
 import { SelectQueryBuilder } from 'typeorm';
 import { IPaginate } from './interface/paginate.interface';
+import { IMapPaginate } from './interface/mapPaginate.interface';
 
 @Injectable()
 export class PaginateService {
-  async queryFilter<T>(
+  mapPaginate(input: IMapPaginate) {
+    const paginate: IPaginate = {
+      limit: +input.limit,
+      offset: +input.page - 1 > 0 ? +input.page - 1 : 0 || 0,
+      pageIndex: +input.page,
+      pageSize: +input.limit,
+    };
+    if (input.sortedBy) {
+      paginate.sorted = [
+        {
+          id: input.sortedBy,
+          desc: input.orderBy.toLowerCase() === 'desc' ? true : false,
+        },
+      ];
+    }
+    if (input.search && input.search != '') {
+      const parseSearchParams = input.search.split(';');
+      const filtered = [];
+      for (const searchParam of parseSearchParams) {
+        const [key, value] = searchParam.split(':');
+        console.log({ id: key, value });
+        filtered.push({ id: key, value });
+      }
+      paginate.filtered = filtered;
+    }
+    return paginate;
+  }
+
+  querySearch<T>(
     query: SelectQueryBuilder<T>,
     filter: IPaginate,
     q: Array<string | number> = [],
@@ -63,6 +92,20 @@ export class PaginateService {
         }
       });
     }
+    return query;
+  }
+
+  async queryFilter<T>(
+    query: SelectQueryBuilder<T>,
+    filter: IPaginate,
+    q: Array<string | number> = [],
+    options: {
+      defaultTable?: string | undefined;
+      operator?: string;
+      getQuery?: 'getRawMany' | 'getMany';
+    } = { getQuery: 'getRawMany', operator: 'like' },
+  ) {
+    query = this.querySearch(query, filter, q, options);
     const total = await query.getCount();
     if (filter.limit) query.limit(filter.limit);
     if (filter.offset) query.offset(filter.offset);

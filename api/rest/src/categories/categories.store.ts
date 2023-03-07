@@ -8,6 +8,7 @@ import slugify from 'slugify';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { GetCategoriesDto } from './dto/get-categories.dto';
 @Injectable()
 export class CategoryStore {
   constructor(
@@ -21,6 +22,12 @@ export class CategoryStore {
     const create = this.baseRepo.create(createDto);
     create.slug = slugify(create.name);
     create.translated_languages = ['en'];
+    //create.parentId = createDto.parent as any;
+    if (createDto.parent) {
+      create.parent = await this.findById(+createDto.parent);
+    }
+
+    console.log(create);
     return await this.baseRepo.save(create);
   }
 
@@ -37,8 +44,15 @@ export class CategoryStore {
     });
   }
 
-  async all(attribute = undefined) {
+  async findTrees(getCategoriesDto: GetCategoriesDto) {
+    const paginate = await this.paginate.mapPaginate(getCategoriesDto);
+    if (paginate.filtered && paginate.filtered.length) {
+    }
     return await this.baseRepo.manager.getTreeRepository(Category).findTrees();
+  }
+
+  async findAll(getCategoriesDto: GetCategoriesDto) {
+    return await this.baseRepo.find();
   }
 
   async totalItems(attribute = undefined) {
@@ -58,7 +72,6 @@ export class CategoryStore {
   }
 
   async findPaginate(paginate?: IPaginate) {
-    console.log(paginate);
     return await this.baseRepo.manager.getTreeRepository(Category).findTrees();
   }
 
