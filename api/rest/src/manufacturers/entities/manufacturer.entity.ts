@@ -6,13 +6,15 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 @Entity()
 export class Manufacturer extends CoreEntity {
-  @OneToOne(() => Attachment, { nullable: true })
+  @ManyToOne(() => Attachment, { nullable: true, cascade: true })
+  @JoinColumn({ name: 'cover_image_id' })
   cover_image?: Attachment;
 
   @Column({ type: 'varchar', nullable: true })
   description?: string;
 
-  @OneToOne(() => Attachment, { nullable: true })
+  @ManyToOne(() => Attachment, { nullable: true, cascade: true })
+  @JoinColumn({ name: 'image_id' })
   image?: Attachment;
 
   @Column({ type: 'boolean', nullable: true })
@@ -30,7 +32,7 @@ export class Manufacturer extends CoreEntity {
   @Column({ type: 'json', nullable: true })
   socials?: ShopSocials;
 
-  @ManyToOne(() => Type)
+  @ManyToOne(() => Type, { cascade: true })
   @JoinColumn({ name: 'type_id' })
   type: Type;
 

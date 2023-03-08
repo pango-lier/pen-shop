@@ -19,13 +19,13 @@ export class TypesStore {
 
   async create(createDto: CreateTypeDto) {
     const create = this.baseRepo.create(createDto);
-    create.slug = slugify(create.name);
+    create.slug = slugify(createDto.name.toLowerCase(), '-');
     return await this.baseRepo.save(create);
   }
 
   async update(id: number, updateDto: UpdateTypeDto) {
     const create = await this.baseRepo.findOne({ where: { id } });
-    create.slug = slugify(updateDto.name);
+    create.slug = slugify(updateDto.name.toLowerCase(), '-');
     return await this.baseRepo.save({ ...create, ...updateDto });
   }
 
