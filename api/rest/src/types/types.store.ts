@@ -39,9 +39,9 @@ export class TypesStore {
     return await this.baseRepo.find();
   }
 
-  async findBySlug(slug: string) {
+  async findBySlug(slug: string, language: string) {
     return await this.baseRepo.findOne({
-      where: [{ slug }],
+      where: [{ slug, language }],
     });
   }
 

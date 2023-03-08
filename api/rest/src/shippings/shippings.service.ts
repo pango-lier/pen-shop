@@ -5,30 +5,32 @@ import { GetShippingsDto } from './dto/get-shippings.dto';
 import { UpdateShippingDto } from './dto/update-shipping.dto';
 import { Shipping } from './entities/shipping.entity';
 import shippingsJson from '@db/shippings.json';
+import { ShippingStore } from './shipping.store';
 
 const shippings = plainToClass(Shipping, shippingsJson);
 
 @Injectable()
 export class ShippingsService {
+  constructor(private readonly shippingStore: ShippingStore) {}
   private shippings: Shipping[] = shippings;
 
   create(createShippingDto: CreateShippingDto) {
-    return this.shippings[0];
+    return this.shippingStore.create(createShippingDto);
   }
 
-  getShippings({}: GetShippingsDto) {
-    return this.shippings;
+  getShippings(getShippingsDto: GetShippingsDto) {
+    return this.shippingStore.all(getShippingsDto);
   }
 
   findOne(id: number) {
-    return this.shippings.find((shipping) => shipping.id === Number(id));
+    return this.shippingStore.findById(id);
   }
 
   update(id: number, updateShippingDto: UpdateShippingDto) {
-    return this.shippings[0];
+    return this.shippingStore.update(id, updateShippingDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} shipping`;
+    return this.shippingStore.softDelete(id);
   }
 }

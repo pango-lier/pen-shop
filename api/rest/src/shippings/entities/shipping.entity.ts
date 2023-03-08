@@ -1,4 +1,4 @@
-import { CoreEntity } from 'src/common/entities/core.entity';
+import { CoreEntity, CoreSoftEntity } from 'src/common/entities/core.entity';
 import { Column, Entity } from 'typeorm';
 
 export enum ShippingType {
@@ -8,18 +8,16 @@ export enum ShippingType {
 }
 
 @Entity()
-export class Shipping extends CoreEntity {
+export class Shipping extends CoreSoftEntity {
   @Column({ type: 'varchar' })
   name: string;
 
   @Column({ type: 'bigint' })
   amount: number;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: true })
   is_global: boolean;
 
   @Column({ type: 'enum', enum: ShippingType, default: ShippingType.FIXED })
   type: ShippingType;
 }
-
-

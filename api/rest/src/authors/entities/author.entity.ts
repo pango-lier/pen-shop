@@ -1,28 +1,28 @@
-import { CoreEntity } from '../../common/entities/core.entity';
+import { CoreEntity, CoreSoftEntity } from '../../common/entities/core.entity';
 import { Attachment } from '../../common/entities/attachment.entity';
 import { ShopSocials } from '../../settings/entities/setting.entity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity()
-export class Author extends CoreEntity {
+export class Author extends CoreSoftEntity {
   @Column({ type: 'tinytext', nullable: true })
   bio?: string;
 
-  @Column({ type: 'tinytext', nullable: true })
-  born?: string;
+  @Column({ type: 'timestamp', nullable: true })
+  born?: Date;
 
-  @OneToOne(() => Attachment, { nullable: true })
+  @OneToOne(() => Attachment, { nullable: true, cascade: true })
   @JoinColumn({ name: 'cover_image_id' })
   cover_image?: Attachment;
 
-  @Column({ type: 'tinytext', nullable: true })
-  death?: string;
+  @Column({ type: 'timestamp', nullable: true })
+  death?: Date;
 
-  @OneToOne(() => Attachment, { nullable: true })
+  @OneToOne(() => Attachment, { nullable: true, cascade: true })
   @JoinColumn({ name: 'image_id' })
   image?: Attachment;
 
-  @Column({ type: 'boolean', nullable: true })
+  @Column({ type: 'boolean', nullable: true, default: true })
   is_approved?: boolean;
 
   @Column({ type: 'varchar', nullable: true })

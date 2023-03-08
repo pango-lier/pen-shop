@@ -1,8 +1,7 @@
-import { OmitType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
 import { Author } from '../entities/author.entity';
 
-export class CreateAuthorDto extends OmitType(Author, [
-  'id',
+export class CreateAuthorDto extends PickType(Author, [
   'bio',
   'born',
   'cover_image',
@@ -13,6 +12,7 @@ export class CreateAuthorDto extends OmitType(Author, [
   'products_count',
   'quote',
   'slug',
+  'is_approved',
   'socials',
   'translated_languages',
 ]) {

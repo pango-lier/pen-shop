@@ -28,8 +28,11 @@ export class TypesController {
   }
 
   @Get(':slug')
-  getTypeBySlug(@Param('slug') slug: string) {
-    return this.typesService.getTypeBySlug(slug);
+  getTypeBySlug(
+    @Param('slug') slug: string,
+    @Query('language') language: string,
+  ) {
+    return this.typesService.getTypeBySlug(slug, language);
   }
 
   @Put(':id')

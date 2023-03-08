@@ -56,25 +56,11 @@ export class TypesService {
     return data;
   }
 
-  async getTypeBySlug(slug: string): Promise<Type> {
-    return await this.typeStore.findBySlug(slug);
+  async getTypeBySlug(slug: string, language: string): Promise<Type> {
+    return await this.typeStore.findBySlug(slug, language);
   }
 
   async create(createTypeDto: CreateTypeDto) {
-    createTypeDto.banners = createTypeDto.banners?.map((i) => {
-      return {
-        title: i.title,
-        description: i?.description,
-        image: {
-          original:
-            'https://admin-pickbazar-rest.vercel.app/_next/image?url=https%3A%2F%2Fpickbazarlaravel.s3.ap-southeast-1.amazonaws.com%2F1847%2Fconversions%2F275640572_108626431775341_6628217905140713890_n-thumbnail.jpg&w=1920&q=75',
-          thumbnail:
-            'https://admin-pickbazar-rest.vercel.app/_next/image?url=https%3A%2F%2Fpickbazarlaravel.s3.ap-southeast-1.amazonaws.com%2F1847%2Fconversions%2F275640572_108626431775341_6628217905140713890_n-thumbnail.jpg&w=1920&q=75',
-        },
-      } as CreateBannerDto;
-    });
-    // console.log(createTypeDto.banners);
-    // return createTypeDto;
     return await this.typeStore.create(createTypeDto);
   }
 

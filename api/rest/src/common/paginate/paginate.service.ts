@@ -8,16 +8,16 @@ import { IMapPaginate } from './interface/mapPaginate.interface';
 export class PaginateService {
   mapPaginate(input: IMapPaginate) {
     const paginate: IPaginate = {
-      limit: +input.limit,
+      limit: +input.limit || undefined,
       offset: +input.page - 1 > 0 ? +input.page - 1 : 0 || 0,
-      pageIndex: +input.page,
-      pageSize: +input.limit,
+      pageIndex: +input.page || 1,
+      pageSize: +input.limit | 100,
     };
-    if (input.sortedBy) {
+    if (input.orderBy) {
       paginate.sorted = [
         {
-          id: input.sortedBy,
-          desc: input.orderBy.toLowerCase() === 'desc' ? true : false,
+          id: input.orderBy,
+          desc: input.sortedBy.toLowerCase() === 'desc' ? true : false,
         },
       ];
     }
@@ -31,6 +31,7 @@ export class PaginateService {
       }
       paginate.filtered = filtered;
     }
+    console.log(paginate);
     return paginate;
   }
 

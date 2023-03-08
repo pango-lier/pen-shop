@@ -26,9 +26,6 @@ export class Type extends CoreSoftEntity {
   @Column({ type: 'varchar' })
   slug: string;
 
-  @OneToOne(() => Attachment)
-  image: Attachment;
-
   @Column({ type: 'varchar' })
   icon: string;
 

@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateAuthorDto } from './dto/update-author.dto';
+import {
+  UpdateApprovalAuthorDto,
+  UpdateAuthorDto,
+} from './dto/update-author.dto';
 import { plainToClass } from 'class-transformer';
 import authorsJson from '@db/authors.json';
 import { Author } from './entities/author.entity';
@@ -52,24 +55,22 @@ export class AuthorsService {
     // };
   }
 
-  getAuthorBySlug(slug: string): Author {
-    return this.authors.find((p) => p.slug === slug);
+  async getAuthorBySlug(slug: string): Promise<Author> {
+    return await this.authorStore.findByIdOrSlug(slug);
   }
 
   async getTopAuthors({ limit = 10 }: GetTopAuthorsDto): Promise<Author[]> {
     return this.authors.slice(0, limit);
   }
 
-  update(id: number, updateAuthorDto: UpdateAuthorDto) {
-    const author = this.authors.find((p) => p.id === Number(id));
-
-    // Update author
-    author.is_approved = updateAuthorDto.is_approved ?? true;
-
-    return author;
+  update(
+    id: number,
+    updateAuthorDto: UpdateAuthorDto | UpdateApprovalAuthorDto,
+  ) {
+    return this.authorStore.update(id, updateAuthorDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} product`;
+    return this.authorStore.softDelete(id);
   }
 }
