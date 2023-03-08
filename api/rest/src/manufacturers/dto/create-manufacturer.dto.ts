@@ -1,8 +1,7 @@
-import { OmitType } from '@nestjs/swagger';
+import { OmitType, PartialType, PickType } from '@nestjs/swagger';
 import { Manufacturer } from '../entities/manufacturer.entity';
 
-export class CreateManufacturerDto extends OmitType(Manufacturer, [
-  'id',
+export class CreateManufacturerDto extends PickType(Manufacturer, [
   'cover_image',
   'description',
   'image',

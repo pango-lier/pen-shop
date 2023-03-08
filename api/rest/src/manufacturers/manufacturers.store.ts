@@ -2,42 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaginateService } from 'src/common/paginate/paginate.service';
-import { IPaginate } from 'src/common/paginate/interface/paginate.interface';
 import { UsersService } from 'src/users/users.service';
-import slugify from 'slugify';
-import { Author } from './entities/author.entity';
-import { CreateAuthorDto } from './dto/create-author.dto';
-import {
-  UpdateApprovalAuthorDto,
-  UpdateAuthorDto,
-} from './dto/update-author.dto';
+import { Manufacturer } from './entities/manufacturer.entity';
+import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
+import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
+import { GetManufacturersDto } from './dto/get-manufactures.dto';
 
 @Injectable()
-export class AuthorStore {
+export class ManufacturersStore {
   constructor(
-    @InjectRepository(Author)
-    private readonly baseRepo: Repository<Author>,
+    @InjectRepository(Manufacturer)
+    private readonly baseRepo: Repository<Manufacturer>,
     private readonly userService: UsersService,
     private readonly paginate: PaginateService,
   ) {}
 
-  async create(createDto: CreateAuthorDto) {
+  async create(createDto: CreateManufacturerDto) {
     const create = this.baseRepo.create(createDto);
-    create.slug = slugify(create.name.toLowerCase(), '-');
-    create.translated_languages = ['en'];
     return await this.baseRepo.save(create);
   }
 
-  async update(
-    id: number,
-    updateDto: UpdateAuthorDto | UpdateApprovalAuthorDto,
-  ) {
-    const create = await this.baseRepo.findOne({ where: { id } });
-    create.slug = slugify(create.name.toLowerCase(), '-');
-    return await this.baseRepo.save({ ...create, ...updateDto });
-  }
-
-  async updateApproval(id: number, updateDto: UpdateApprovalAuthorDto) {
+  async update(id: number, updateDto: UpdateManufacturerDto) {
     const create = await this.baseRepo.findOne({ where: { id } });
     return await this.baseRepo.save({ ...create, ...updateDto });
   }
@@ -48,8 +33,7 @@ export class AuthorStore {
     });
   }
 
-  async all(author) {
-    console.log(author);
+  async all(manufacturer) {
     return await this.baseRepo.find();
   }
 
@@ -58,18 +42,15 @@ export class AuthorStore {
     if (Number(idOrSlug)) filter = { id: Number(idOrSlug) };
     return await this.baseRepo.findOne({
       where: filter,
-      relations: {
-        image: true,
-        cover_image: true,
-      },
     });
   }
 
-  async findPaginate(paginate?: IPaginate) {
-    const query = this.baseRepo.createQueryBuilder('author');
+  async findPaginate(getManufacturersDto: GetManufacturersDto) {
+    const paginate = this.paginate.mapPaginate(getManufacturersDto);
+    const query = this.baseRepo.createQueryBuilder('manufacturer');
     //  query.leftJoinAndSelect('types.banners', 'banners');
     return await this.paginate.queryFilter(query, paginate, ['id', 'name'], {
-      defaultTable: 'author',
+      defaultTable: 'manufacturer',
       getQuery: 'getMany',
     });
   }

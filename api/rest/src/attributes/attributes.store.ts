@@ -20,14 +20,14 @@ export class AttributeStore {
 
   async create(createDto: CreateAttributeDto) {
     const create = this.baseRepo.create(createDto);
-    create.slug = slugify(create.name);
+    create.slug = slugify(create.name.toLowerCase(), '-');
     create.translated_languages = ['en'];
     return await this.baseRepo.save(create);
   }
 
   async update(id: number, updateDto: UpdateAttributeDto) {
     const create = await this.baseRepo.findOne({ where: { id } });
-    create.slug = slugify(updateDto.name);
+    create.slug = slugify(updateDto.name.toLowerCase(), '-');
     updateDto.values = updateDto.values?.map((i) => {
       const { id, ...rest } = i;
       if (i.id) return { ...i, id: id + '' };

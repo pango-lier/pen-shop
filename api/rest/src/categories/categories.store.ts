@@ -20,7 +20,7 @@ export class CategoryStore {
 
   async create(createDto: CreateCategoryDto) {
     const create = this.baseRepo.create(createDto);
-    create.slug = slugify(create.name);
+    create.slug = slugify(create.name.toLowerCase(), '-');
     create.translated_languages = ['en'];
     //create.parentId = createDto.parent as any;
     if (createDto.parent) {
@@ -33,7 +33,7 @@ export class CategoryStore {
 
   async update(id: number, updateDto: UpdateCategoryDto) {
     const create = await this.baseRepo.findOne({ where: { id } });
-    create.slug = slugify(updateDto.name);
+    create.slug = slugify(updateDto.name.toLowerCase(), '-');
     // create.parentId = 0;
     return await this.baseRepo.save({ ...create, ...updateDto });
   }

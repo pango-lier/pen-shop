@@ -11,6 +11,7 @@ import {
 import { paginate } from '../common/pagination/paginate';
 import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
+import { ManufacturersStore } from './manufacturers.store';
 
 const manufacturers = plainToClass(Manufacturer, manufacturersJson);
 
@@ -23,13 +24,17 @@ const fuse = new Fuse(manufacturers, options);
 
 @Injectable()
 export class ManufacturersService {
+  constructor(private readonly manufacturerStore: ManufacturersStore) {}
   private manufacturers: Manufacturer[] = manufacturers;
 
   create(createManufactureDto: CreateManufacturerDto) {
-    return this.manufacturers[0];
+    return this.manufacturerStore.create(createManufactureDto);
+  }
+  async getManufactures(getDto: GetManufacturersDto) {
+    return this.manufacturerStore.findPaginate(getDto);
   }
 
-  async getManufactures({
+  async getManufacturesF({
     limit,
     page,
     search,
@@ -63,21 +68,14 @@ export class ManufacturersService {
   }
 
   async getManufacturesBySlug(slug: string): Promise<Manufacturer> {
-    return this.manufacturers.find(
-      (singleManufacture) => singleManufacture.slug === slug,
-    );
+    return this.manufacturerStore.findByIdOrSlug(slug);
   }
 
   update(id: number, updateManufacturesDto: UpdateManufacturerDto) {
-    const manufacturer = this.manufacturers.find((p) => p.id === Number(id));
-
-    // Update author
-    manufacturer.is_approved = updateManufacturesDto.is_approved ?? true;
-
-    return manufacturer;
+    return this.manufacturerStore.update(id, updateManufacturesDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} product`;
+    return this.manufacturerStore.softDelete(id);
   }
 }
