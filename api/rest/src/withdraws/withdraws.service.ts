@@ -4,19 +4,21 @@ import { ApproveWithdrawDto } from './dto/approve-withdraw.dto';
 import { Withdraw } from './entities/withdraw.entity';
 import { GetWithdrawsDto, WithdrawPaginator } from './dto/get-withdraw.dto';
 import { paginate } from 'src/common/pagination/paginate';
+import { WithdrawsStore } from './withdraws.store';
 
 @Injectable()
 export class WithdrawsService {
+  constructor(private readonly withdrawStore: WithdrawsStore) {}
   private withdraws: Withdraw[] = [];
 
   create(createWithdrawDto: CreateWithdrawDto) {
-    return {
-      id: this.withdraws.length + 1,
-      ...createWithdrawDto,
-    };
+    return this.withdrawStore.create(createWithdrawDto);
+  }
+  getWithdraws(getDto: GetWithdrawsDto) {
+    return this.withdrawStore.findPaginate(getDto);
   }
 
-  getWithdraws({
+  getWithdrawsOld({
     limit,
     page,
     status,
@@ -44,14 +46,14 @@ export class WithdrawsService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} withdraw`;
+    return this.withdrawStore.findById(id);
   }
 
   update(id: number, updateWithdrawDto: ApproveWithdrawDto) {
-    return this.withdraws[0];
+    return this.withdrawStore.update(id, updateWithdrawDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} withdraw`;
+    return this.withdrawStore.softDelete(id);
   }
 }

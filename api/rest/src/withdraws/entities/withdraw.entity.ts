@@ -1,7 +1,6 @@
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Shop } from 'src/shops/entities/shop.entity';
-import { Column, JoinColumn, ManyToOne } from 'typeorm';
-
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 export enum WithdrawStatus {
   APPROVED = 'Approved',
@@ -11,11 +10,16 @@ export enum WithdrawStatus {
   PROCESSING = 'Processing',
 }
 
+@Entity()
 export class Withdraw extends CoreEntity {
   @Column({ type: 'bigint' })
   amount: number;
 
-  @Column({ type: 'enum', enum: WithdrawStatus, default: WithdrawStatus.APPROVED })
+  @Column({
+    type: 'enum',
+    enum: WithdrawStatus,
+    default: WithdrawStatus.APPROVED,
+  })
   status: WithdrawStatus;
 
   @Column({ type: 'bigint', unsigned: true })
@@ -28,10 +32,9 @@ export class Withdraw extends CoreEntity {
   @Column({ type: 'varchar' })
   payment_method: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'tinytext' })
   details: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'tinytext' })
   note: string;
 }
-
