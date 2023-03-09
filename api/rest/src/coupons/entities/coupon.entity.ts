@@ -1,7 +1,7 @@
 import { Attachment } from 'src/common/entities/attachment.entity';
-import { CoreEntity } from 'src/common/entities/core.entity';
+import { CoreEntity, CoreSoftEntity } from 'src/common/entities/core.entity';
 import { Order } from 'src/orders/entities/order.entity';
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
 export enum CouponType {
   FIXED_COUPON = 'fixed',
@@ -10,7 +10,7 @@ export enum CouponType {
 }
 
 @Entity()
-export class Coupon extends CoreEntity {
+export class Coupon extends CoreSoftEntity {
   @Column({ type: 'varchar' })
   code: string;
 
@@ -30,24 +30,25 @@ export class Coupon extends CoreEntity {
   })
   type: CouponType;
 
-  @OneToOne(() => Attachment)
+  @OneToOne(() => Attachment, { cascade: true })
+  @JoinColumn({ name: 'image_id' })
   image: Attachment;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: true })
   is_valid: boolean;
 
   @Column({ type: 'bigint' })
   amount: number;
 
-  @Column({ type: 'varchar' })
-  active_from: string;
+  @Column({ type: 'timestamp' })
+  active_from: Date;
 
-  @Column({ type: 'varchar' })
-  expire_at: string;
+  @Column({ type: 'timestamp' })
+  expire_at: Date;
 
   @Column({ type: 'varchar' })
   language: string;
 
-  @Column({ type: 'simple-array' })
+  @Column({ type: 'simple-array', nullable: true })
   translated_languages: string[];
 }

@@ -7,6 +7,7 @@ import couponsJson from '@db/coupons.json';
 import Fuse from 'fuse.js';
 import { GetCouponsDto } from './dto/get-coupons.dto';
 import { paginate } from 'src/common/pagination/paginate';
+import { CouponsStore } from './coupons.store';
 
 const coupons = plainToClass(Coupon, couponsJson);
 const options = {
@@ -17,60 +18,64 @@ const fuse = new Fuse(coupons, options);
 
 @Injectable()
 export class CouponsService {
+  constructor(
+    private readonly couponStore: CouponsStore,
+  ) { }
   private coupons: Coupon[] = coupons;
 
   create(createCouponDto: CreateCouponDto) {
-    return this.coupons[0];
+    return this.couponStore.create(createCouponDto);
   }
 
-  getCoupons({ search, limit, page }: GetCouponsDto) {
-    if (!page) page = 1;
-    if (!limit) limit = 12;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    let data: Coupon[] = this.coupons;
-    // if (text?.replace(/%/g, '')) {
-    //   data = fuse.search(text)?.map(({ item }) => item);
+  getCoupons(getDto: GetCouponsDto) {
+    return this.couponStore.findPaginate(getDto);
+    // if (!page) page = 1;
+    // if (!limit) limit = 12;
+    // const startIndex = (page - 1) * limit;
+    // const endIndex = page * limit;
+    // let data: Coupon[] = this.coupons;
+    // // if (text?.replace(/%/g, '')) {
+    // //   data = fuse.search(text)?.map(({ item }) => item);
+    // // }
+
+    // if (search) {
+    //   const parseSearchParams = search.split(';');
+    //   const searchText: any = [];
+    //   for (const searchParam of parseSearchParams) {
+    //     const [key, value] = searchParam.split(':');
+    //     // TODO: Temp Solution
+    //     if (key !== 'slug') {
+    //       searchText.push({
+    //         [key]: value,
+    //       });
+    //     }
+    //   }
+
+    //   data = fuse
+    //     .search({
+    //       $and: searchText,
+    //     })
+    //     ?.map(({ item }) => item);
     // }
 
-    if (search) {
-      const parseSearchParams = search.split(';');
-      const searchText: any = [];
-      for (const searchParam of parseSearchParams) {
-        const [key, value] = searchParam.split(':');
-        // TODO: Temp Solution
-        if (key !== 'slug') {
-          searchText.push({
-            [key]: value,
-          });
-        }
-      }
-
-      data = fuse
-        .search({
-          $and: searchText,
-        })
-        ?.map(({ item }) => item);
-    }
-
-    const results = data.slice(startIndex, endIndex);
-    const url = `/coupons?search=${search}&limit=${limit}`;
-    return {
-      data: results,
-      ...paginate(data.length, page, limit, results.length, url),
-    };
+    // const results = data.slice(startIndex, endIndex);
+    // const url = `/coupons?search=${search}&limit=${limit}`;
+    // return {
+    //   data: results,
+    //   ...paginate(data.length, page, limit, results.length, url),
+    // };
   }
 
-  getCoupon(param: string, language: string): Coupon {
-    return this.coupons.find((p) => p.code === param);
+  getCoupon(param: string, language: string): Promise<Coupon> {
+    return this.couponStore.findByCodeAndLanguage(param, language);
   }
 
   update(id: number, updateCouponDto: UpdateCouponDto) {
-    return this.coupons[0];
+    return this.couponStore.update(id, updateCouponDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} coupon`;
+    return this.couponStore.softDelete(id);
   }
 
   verifyCoupon(code: string) {
