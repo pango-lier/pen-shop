@@ -6,6 +6,7 @@ import {
   Put,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { SettingsService } from './settings.service';
 import { CreateSettingDto } from './dto/create-setting.dto';
@@ -17,11 +18,12 @@ export class SettingsController {
 
   @Post()
   create(@Body() createSettingDto: CreateSettingDto) {
-    return this.settingsService.create(createSettingDto);
+    return this.settingsService.save(createSettingDto);
   }
 
   @Get()
-  findAll() {
+  findAll(@Query('language') language: string) {
+    console.log(language);
     return this.settingsService.findAll();
   }
 }

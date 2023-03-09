@@ -96,6 +96,24 @@ export class PaginateService {
     return query;
   }
 
+  async queryRawFilter<T>(
+    query: SelectQueryBuilder<T>,
+    filter: IPaginate,
+    q: Array<string | number> = [],
+    options: {
+      defaultTable?: string | undefined;
+      operator?: string;
+      getQuery?: 'getRawMany' | 'getMany';
+    } = { getQuery: 'getRawMany', operator: 'like' },
+  ) {
+    query = this.querySearch(query, filter, q, options);
+    const total = await query.getCount();
+    if (filter.limit) query.limit(filter.limit);
+    if (filter.offset) query.offset(filter.offset);
+    const results = await query[options.getQuery]();
+    return { total, results };
+  }
+
   async queryFilter<T>(
     query: SelectQueryBuilder<T>,
     filter: IPaginate,

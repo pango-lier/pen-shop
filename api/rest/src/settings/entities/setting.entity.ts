@@ -1,6 +1,6 @@
 import { Attachment } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
 export class SettingsOptions {
   siteTitle: string;
@@ -72,15 +72,14 @@ export class Location {
   formattedAddress: string;
 }
 
-
+@Entity()
 export class Setting extends CoreEntity {
   @Column({ type: 'json' })
   options: SettingsOptions;
-  
-  @Column({ type: 'string', length: 4 })
+
+  @Column({ type: 'varchar', length: 4, default: 'en' })
   language: string;
 
-  @Column({ type: 'json', array: true })
+  @Column({ type: 'simple-array' })
   translated_languages: string[];
 }
-

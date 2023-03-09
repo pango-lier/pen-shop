@@ -26,7 +26,6 @@ export class PaymentMethodService {
     private readonly stripeService: StripePaymentService,
     private readonly settingService: SettingsService,
   ) {}
-  private setting: Setting = this.settingService.findAll();
 
   async create(createPaymentMethodDto: CreatePaymentMethodDto, userId: number) {
     try {
@@ -44,7 +43,8 @@ export class PaymentMethodService {
           },
         );
       }
-      const paymentGateway: string = this.setting.options.paymentGateway;
+      const setting: Setting = await this.settingService.findAll();
+      const paymentGateway: string = setting.options.paymentGateway;
       return await this.saveCard(
         createPaymentMethodDto,
         userId,
@@ -95,7 +95,8 @@ export class PaymentMethodService {
     createPaymentMethodDto: CreatePaymentMethodDto,
     userId: number,
   ) {
-    const paymentGateway: string = this.setting.options.paymentGateway;
+    const setting: Setting = await this.settingService.findAll();
+    const paymentGateway: string = setting.options.paymentGateway;
     try {
       return this.saveCard(createPaymentMethodDto, userId, paymentGateway);
     } catch (err) {

@@ -24,7 +24,7 @@ export class TaxesController {
 
   @Get()
   findAll(@Query() getTaxesDto: GetTaxesDto) {
-    return this.taxesService.findAll();
+    return this.taxesService.findAll(getTaxesDto);
   }
 
   @Get(':id')

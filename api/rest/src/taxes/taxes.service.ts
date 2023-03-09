@@ -4,30 +4,33 @@ import { CreateTaxDto } from './dto/create-tax.dto';
 import { UpdateTaxDto } from './dto/update-tax.dto';
 import { Tax } from './entities/tax.entity';
 import taxesJson from '@db/taxes.json';
+import { TaxesStore } from './taxes.store';
+import { GetTaxesDto } from './dto/get-taxes.dto';
 
 const taxes = plainToClass(Tax, taxesJson);
 
 @Injectable()
 export class TaxesService {
+  constructor(private readonly taxStore: TaxesStore) {}
   private taxes: Tax[] = taxes;
 
   create(createTaxDto: CreateTaxDto) {
-    return this.taxes[0];
+    return this.taxStore.create(createTaxDto);
   }
 
-  findAll() {
-    return this.taxes;
+  findAll(getDto: GetTaxesDto) {
+    return this.taxStore.all(getDto);
   }
 
   findOne(id: number) {
-    return this.taxes.find((tax) => tax.id === Number(id));
+    return this.taxStore.findById(id);
   }
 
   update(id: number, updateTaxDto: UpdateTaxDto) {
-    return this.taxes[0];
+    return this.taxStore.update(id, updateTaxDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} tax`;
+    return this.taxStore.softDelete(id);
   }
 }

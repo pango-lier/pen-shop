@@ -2,38 +2,29 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaginateService } from 'src/common/paginate/paginate.service';
-import { IPaginate } from 'src/common/paginate/interface/paginate.interface';
 import { UsersService } from 'src/users/users.service';
 import slugify from 'slugify';
-import { CreateAttributeDto } from './dto/create-attribute.dto';
-import { Attribute } from './entities/attribute.entity';
-import { UpdateAttributeDto } from './dto/update-attribute.dto';
-import { GetProductsDto } from './dto/get-attributes.dto';
+import { Tax } from './entities/tax.entity';
+import { CreateTaxDto } from './dto/create-tax.dto';
+import { UpdateTaxDto } from './dto/update-tax.dto';
+import { GetTaxesDto } from './dto/get-taxes.dto';
 
 @Injectable()
-export class AttributeStore {
+export class TaxesStore {
   constructor(
-    @InjectRepository(Attribute)
-    private readonly baseRepo: Repository<Attribute>,
+    @InjectRepository(Tax)
+    private readonly baseRepo: Repository<Tax>,
     private readonly userService: UsersService,
     private readonly paginate: PaginateService,
   ) {}
 
-  async create(createDto: CreateAttributeDto) {
+  async create(createDto: CreateTaxDto) {
     const create = this.baseRepo.create(createDto);
-    create.slug = slugify(create.name.toLowerCase(), '-');
-    create.translated_languages = ['en'];
     return await this.baseRepo.save(create);
   }
 
-  async update(id: number, updateDto: UpdateAttributeDto) {
+  async update(id: number, updateDto: UpdateTaxDto) {
     const create = await this.baseRepo.findOne({ where: { id } });
-    create.slug = slugify(updateDto.name.toLowerCase(), '-');
-    updateDto.values = updateDto.values?.map((i) => {
-      const { id, ...rest } = i;
-      if (i.id) return { ...i, id: id + '' };
-      return rest as any;
-    });
     return await this.baseRepo.save({ ...create, ...updateDto });
   }
 
@@ -43,17 +34,16 @@ export class AttributeStore {
     });
   }
 
-  async all(attribute: GetProductsDto) {
-    const paginate = this.paginate.mapPaginate(attribute);
-    const query = this.baseRepo.createQueryBuilder('attribute');
-    query.leftJoinAndSelect('attribute.values', 'value');
-    query.leftJoinAndSelect('attribute.shop', 'shop');
+  async all(getTaxDto: GetTaxesDto) {
+    const paginate = this.paginate.mapPaginate(getTaxDto);
+    const query = this.baseRepo.createQueryBuilder('tax');
+    // query.leftJoinAndSelect('Tax.type', 'type');
     const { results } = await this.paginate.queryRawFilter(
       query,
       paginate,
       ['id', 'name'],
       {
-        defaultTable: 'attribute',
+        defaultTable: 'tax',
         getQuery: 'getMany',
       },
     );
@@ -65,17 +55,16 @@ export class AttributeStore {
     if (Number(idOrSlug)) filter = { id: Number(idOrSlug) };
     return await this.baseRepo.findOne({
       where: filter,
-      relations: {
-        values: true,
-      },
     });
   }
 
-  async findPaginate(paginate?: IPaginate) {
-    const query = this.baseRepo.createQueryBuilder('attribute');
-    //  query.leftJoinAndSelect('types.banners', 'banners');
+  async findPaginate(getTaxDto: GetTaxesDto) {
+    const paginate = this.paginate.mapPaginate(getTaxDto);
+    console.log(paginate);
+    const query = this.baseRepo.createQueryBuilder('tax');
+    // query.leftJoinAndSelect('Tax.type', 'type');
     return await this.paginate.queryFilter(query, paginate, ['id', 'name'], {
-      defaultTable: 'attribute',
+      defaultTable: 'tax',
       getQuery: 'getMany',
     });
   }
