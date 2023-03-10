@@ -1,5 +1,6 @@
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { Review } from '../../reviews/entities/review.entity';
 
 @Entity()
 export class Feedback extends CoreEntity {
