@@ -38,7 +38,7 @@ export class Type extends CoreSoftEntity {
   @Column({ type: 'json', nullable: true })
   settings?: TypeSettings;
 
-  @Column({ type: 'varchar', length: 4 })
+  @Column({ type: 'varchar', length: 4, default: 'en' })
   language: string;
 
   @Column({ type: 'simple-array', nullable: true })

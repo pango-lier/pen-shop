@@ -5,8 +5,12 @@ import { paginate } from 'src/common/pagination/paginate';
 import { Question } from './entities/question.entity';
 import { GetQuestionDto } from './dto/get-questions.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
-import { UpdateQuestionDto } from './dto/update-question.dto';
+import {
+  UpdateAnswerQuestionDto,
+  UpdateQuestionDto,
+} from './dto/update-question.dto';
 import questionsJSON from '@db/questions.json';
+import { QuestionsStore } from './questions.store';
 
 const questions = plainToClass(Question, questionsJSON);
 const options = {
@@ -18,8 +22,13 @@ const fuse = new Fuse(questions, options);
 @Injectable()
 export class QuestionService {
   private question: Question[] = questions;
+  constructor(private readonly questionStore: QuestionsStore) {}
 
-  findAllQuestions({
+  findAllQuestions(paginate: GetQuestionDto) {
+    return this.questionStore.findPaginate(paginate);
+  }
+
+  findAllQuestionsOld({
     limit,
     page,
     search,
@@ -53,18 +62,18 @@ export class QuestionService {
   }
 
   findQuestion(id: number) {
-    return this.question.find((p) => p.id === id);
+    return this.questionStore.findById(id);
   }
 
   create(createQuestionDto: CreateQuestionDto) {
-    return this.question[0];
+    return this.questionStore.create(createQuestionDto);
   }
 
-  update(id: number, updateQuestionDto: UpdateQuestionDto) {
-    return this.question[0];
+  update(id: number, updateQuestionDto: UpdateAnswerQuestionDto) {
+    return this.questionStore.update(id, updateQuestionDto);
   }
 
   delete(id: number) {
-    return this.question[0];
+    return this.questionStore.softDelete(id);
   }
 }

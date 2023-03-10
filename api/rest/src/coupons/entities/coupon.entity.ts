@@ -50,5 +50,5 @@ export class Coupon extends CoreSoftEntity {
   language: string;
 
   @Column({ type: 'simple-array', nullable: true })
-  translated_languages: string[];
+  translated_languages?: string[];
 }

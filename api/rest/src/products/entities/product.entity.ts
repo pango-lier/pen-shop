@@ -184,5 +184,5 @@ export class Product extends CoreEntity {
   language: string;
 
   @Column({ type: 'simple-array', nullable: true })
-  translated_languages: string[];
+  translated_languages?: string[];
 }

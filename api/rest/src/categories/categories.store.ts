@@ -21,7 +21,6 @@ export class CategoryStore {
   async create(createDto: CreateCategoryDto) {
     const create = this.baseRepo.create(createDto);
     create.slug = slugify(create.name.toLowerCase(), '-');
-    create.translated_languages = ['en'];
     //create.parentId = createDto.parent as any;
     if (createDto.parent) {
       create.parent = await this.findById(+createDto.parent);

@@ -42,7 +42,7 @@ export class Manufacturer extends CoreEntity {
   @Column({ type: 'varchar', nullable: true })
   website?: string;
 
-  @Column({ type: 'varchar', length: 4, nullable: true })
+  @Column({ type: 'varchar', length: 4, default: 'en' })
   language?: string;
 
   @Column({ type: 'simple-array', nullable: true })

@@ -17,7 +17,8 @@ export default registerAs(
       database: env.get('DB_DATABASE').asString(),
       synchronize: env.get('DB_SYNCHRONIZE').asBool(),
       // migrationsRun: !env.get('DB_SYNCHRONIZE').asBool(),
-      logging: env.get('DB_LOGGING').asBool(),
+      logging: env.get('DB_LOGGING').asBool(), //true,[error,query,schema,warn,info,log]
+      //logger:'advanced-console',//
       // cache: {
       //   type: 'ioredis',
       //   alwaysEnabled: env.get('DB_CACHE_DURATION').asIntPositive() > 0,

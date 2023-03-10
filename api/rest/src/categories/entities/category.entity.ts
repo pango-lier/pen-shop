@@ -71,6 +71,6 @@ export class Category {
   @Column({ type: 'varchar', length: 4 })
   language: string;
 
-  @Column({ type: 'simple-array' })
-  translated_languages: string[];
+  @Column({ type: 'simple-array', nullable: true })
+  translated_languages?: string[];
 }

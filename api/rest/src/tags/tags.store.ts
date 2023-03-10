@@ -19,7 +19,6 @@ export class TagsStore {
   async create(createDto: CreateTagDto) {
     const create = this.baseRepo.create(createDto);
     create.slug = slugify(createDto.name.toLowerCase(), '-');
-    create.translated_languages = ['en'];
     return await this.baseRepo.save(create);
   }
 

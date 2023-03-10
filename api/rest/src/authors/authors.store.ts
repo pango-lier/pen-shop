@@ -24,7 +24,6 @@ export class AuthorStore {
   async create(createDto: CreateAuthorDto) {
     const create = this.baseRepo.create(createDto);
     create.slug = slugify(create.name.toLowerCase(), '-');
-    create.translated_languages = ['en'];
     return await this.baseRepo.save(create);
   }
 

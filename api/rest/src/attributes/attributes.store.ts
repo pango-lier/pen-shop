@@ -22,7 +22,6 @@ export class AttributeStore {
   async create(createDto: CreateAttributeDto) {
     const create = this.baseRepo.create(createDto);
     create.slug = slugify(create.name.toLowerCase(), '-');
-    create.translated_languages = ['en'];
     return await this.baseRepo.save(create);
   }
 

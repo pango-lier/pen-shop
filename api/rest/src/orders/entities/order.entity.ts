@@ -132,11 +132,11 @@ export class Order extends CoreEntity {
   @Column({ type: 'json' })
   shipping_address: UserAddress;
 
-  @Column({ type: 'varchar', length: 4 })
+  @Column({ type: 'varchar', length: 4, default: 'en' })
   language: string;
 
-  @Column({ type: 'simple-array' })
-  translated_languages: string[];
+  @Column({ type: 'simple-array', nullable: true })
+  translated_languages?: string[];
 
   @OneToOne(() => PaymentIntent)
   payment_intent: PaymentIntent;
@@ -144,7 +144,6 @@ export class Order extends CoreEntity {
 
 @Entity()
 export class OrderFiles extends CoreEntity {
-
   @Column({ type: 'varchar' })
   purchase_key: string;
 

@@ -10,7 +10,10 @@ import {
 } from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { GetQuestionDto } from './dto/get-questions.dto';
-import { UpdateQuestionDto } from './dto/update-question.dto';
+import {
+  UpdateAnswerQuestionDto,
+  UpdateQuestionDto,
+} from './dto/update-question.dto';
 import { QuestionService } from './questions.service';
 
 @Controller('questions')
@@ -38,7 +41,7 @@ export class QuestionController {
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Body() updateQuestionDto: UpdateQuestionDto,
+    @Body() updateQuestionDto: UpdateAnswerQuestionDto,
   ) {
     return this.questionService.update(+id, updateQuestionDto);
   }
