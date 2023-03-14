@@ -51,10 +51,10 @@ export class ShopsStore {
   }
 
   async findPaginate(paginate: IPaginate) {
-    const query = this.baseRepo.createQueryBuilder('shops');
-    query.leftJoinAndSelect('shops.owner', 'owner');
+    const query = this.baseRepo.createQueryBuilder('shop');
+    query.leftJoinAndSelect('shop.owner', 'owner');
     return await this.paginate.queryFilter(query, paginate, ['id', 'name'], {
-      defaultTable: 'shops',
+      defaultTable: 'shop',
       getQuery: 'getMany',
     });
   }

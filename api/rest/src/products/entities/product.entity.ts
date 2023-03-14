@@ -11,18 +11,19 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
 } from 'typeorm';
 
-enum ProductStatus {
+export enum ProductStatus {
   PUBLISH = 'publish',
   DRAFT = 'draft',
 }
 
-enum ProductType {
+export enum ProductType {
   SIMPLE = 'simple',
   VARIABLE = 'variable',
 }
@@ -48,6 +49,9 @@ export class Variation extends CoreEntity {
 
   @Column({ type: 'boolean' })
   is_disable: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  is_digital: boolean;
 
   @Column({ type: 'bigint', nullable: true })
   sale_price?: number;
@@ -95,31 +99,37 @@ export class Product extends CoreEntity {
   product_type: ProductType;
 
   @ManyToMany(() => Category)
+  @JoinTable()
   categories: Category[];
 
-  @ManyToMany(() => Tag)
+  @ManyToMany(() => Tag, { cascade: true })
+  @JoinTable()
   tags?: Tag[];
 
-  @ManyToMany(() => AttributeValue, { nullable: true })
+  @ManyToMany(() => AttributeValue, { nullable: true, cascade: true })
+  @JoinTable()
   variations?: AttributeValue[];
 
-  @ManyToMany(() => Variation, { nullable: true })
+  @ManyToMany(() => Variation, { nullable: true, cascade: true })
+  @JoinTable()
   variation_options?: Variation[];
 
   @Column({ type: 'json', nullable: true })
   pivot?: OrderProductPivot;
 
-  @ManyToMany(() => Order)
+  @ManyToMany(() => Order, { nullable: true })
+  @JoinTable()
   orders?: Order[];
-
-  @ManyToOne(() => Shop)
-  @JoinColumn({ name: 'shop_id' })
-  shop: Shop;
 
   @Column({ type: 'bigint', unsigned: true })
   shop_id: number;
 
-  @ManyToMany(() => Product)
+  @ManyToOne(() => Shop, { cascade: true })
+  @JoinColumn({ name: 'shop_id' })
+  shop: Shop;
+
+  @ManyToMany(() => Product, { nullable: true })
+  @JoinTable()
   related_products?: Product[];
 
   @Column({ type: 'varchar' })
@@ -145,9 +155,11 @@ export class Product extends CoreEntity {
 
   //@Column({ type: 'json', nullable: true })
   @ManyToMany(() => Attachment)
+  @JoinTable()
   gallery?: Attachment[];
 
-  @OneToOne(() => Attachment)
+  @ManyToOne(() => Attachment)
+  @JoinColumn({ name: 'image_id' })
   image?: Attachment;
 
   @Column({ type: 'enum', enum: ProductStatus, default: ProductStatus.DRAFT })
@@ -168,20 +180,20 @@ export class Product extends CoreEntity {
   @Column({ type: 'bigint', nullable: true })
   quantity: number;
 
-  @Column({ type: 'varchar' })
-  unit: string;
+  @Column({ type: 'varchar', nullable: true })
+  unit?: string;
 
-  @Column({ type: 'bigint' })
-  ratings: number;
+  @Column({ type: 'bigint', nullable: true })
+  ratings?: number;
 
-  @Column({ type: 'boolean' })
-  in_wishlist: boolean;
+  @Column({ type: 'boolean', default: false })
+  in_wishlist?: boolean;
 
   @OneToMany(() => Review, (review) => review.product, { nullable: true })
   my_review?: Review[];
 
   @Column({ type: 'varchar', length: 4, nullable: true })
-  language: string;
+  language?: string;
 
   @Column({ type: 'simple-array', nullable: true })
   translated_languages?: string[];

@@ -26,9 +26,9 @@ export class Shop extends CoreSoftEntity {
   @Column({ type: 'bigint', unsigned: true })
   owner_id: number;
 
-  @ManyToOne(() => User, (user) => user.shops)
+  @ManyToOne(() => User, (user) => user.shops, { nullable: true })
   @JoinColumn({ name: 'owner_id' })
-  owner: User;
+  owner?: User;
 
   @OneToMany(() => User, (user) => user.managed_shop, { nullable: true })
   staffs?: User[];

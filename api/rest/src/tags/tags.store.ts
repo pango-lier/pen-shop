@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { PaginateService } from 'src/common/paginate/paginate.service';
 import { IPaginate } from 'src/common/paginate/interface/paginate.interface';
 import { User } from 'src/users/entities/user.entity';
@@ -31,6 +31,12 @@ export class TagsStore {
   async findById(id: number) {
     return await this.baseRepo.findOne({
       where: [{ id }],
+    });
+  }
+
+  async findByIds(id: number[]) {
+    return await this.baseRepo.find({
+      where: [{ id: In(id) }],
     });
   }
 
